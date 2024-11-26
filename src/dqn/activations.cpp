@@ -21,3 +21,7 @@ T derActivationF(T x)
 
     return x;
 }
+
+// Explicit instantiation for the types you need
+template double activationF<double>(double);
+template double derActivationF<double>(double);
