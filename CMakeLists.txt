@@ -47,3 +47,9 @@ target_link_directories(${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME} raylib)
+
+
+# Enable testing
+include(CTest)
+enable_testing()
+add_subdirectory(src/dqn)
