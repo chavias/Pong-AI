@@ -8,6 +8,7 @@ public:
     int radius;
 
     Ball();
+    void StartMoving();
     void Reset();
     void Update(float deltaTime);
     void Draw() const;

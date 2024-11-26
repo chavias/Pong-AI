@@ -1,51 +1,81 @@
 #include "Game.hpp"
 #include "constants.hpp"
 
-Game::Game() 
+Game::Game()
     : playerPaddle(SCREEN_WIDTH - PADDLE_WIDTH - 10, SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2),
-      cpuPaddle(10, SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2) {
+      cpuPaddle(10, SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2),
+      resetTimer(0.0f),
+      isBallFrozen(false)
+{
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Pong");
     SetTargetFPS(60);
 }
 
-Game::~Game() {
+Game::~Game()
+{
     CloseWindow();
 }
 
-void Game::Run() {
-    while (!WindowShouldClose()) {
+void Game::Run()
+{
+    while (!WindowShouldClose())
+    {
         float deltaTime = GetFrameTime();
         Update(deltaTime);
         Render();
     }
 }
 
-void Game::Update(float deltaTime) {
-    ball.Update(deltaTime);
+void Game::Update(float deltaTime)
+{
     playerPaddle.Update(deltaTime);
     cpuPaddle.UpdateWithBall(deltaTime, ball.y);
 
-    if (CheckCollisionCircleRec(Vector2{ball.x, ball.y}, ball.radius, 
-                                Rectangle{playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height})) {
-        ball.speed_x *= -1;
+    if (isBallFrozen)
+    {
+        // Update the reset timer
+        resetTimer += deltaTime;
+        if (resetTimer >= 1.0f)
+        {
+            isBallFrozen = false;
+            resetTimer = 0.0f; // Reset the timer
+            ball.StartMoving();
+        }
     }
+    else
+    {
 
-    if (CheckCollisionCircleRec(Vector2{ball.x, ball.y}, ball.radius, 
-                                Rectangle{cpuPaddle.x, cpuPaddle.y, cpuPaddle.width, cpuPaddle.height})) {
-        ball.speed_x *= -1;
-    }
+        ball.Update(deltaTime);
+        if (CheckCollisionCircleRec(Vector2{ball.x, ball.y}, ball.radius,
+                                    Rectangle{playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height}))
+        {
+            ball.speed_x *= -1;
+        }
 
-    // count score and reset
-    if (ball.x - ball.radius <= 0) {
-        scoreManager.PlayerScored();
-        ball.Reset();
-    } else if (ball.x + ball.radius >= SCREEN_WIDTH) {
-        scoreManager.CpuScored();
-        ball.Reset();
+        if (CheckCollisionCircleRec(Vector2{ball.x, ball.y}, ball.radius,
+                                    Rectangle{cpuPaddle.x, cpuPaddle.y, cpuPaddle.width, cpuPaddle.height}))
+        {
+            ball.speed_x *= -1;
+        }
+
+        // count score and reset
+        if (ball.x - ball.radius <= 0)
+        {
+            scoreManager.PlayerScored();
+            ball.Reset();
+            isBallFrozen = true;
+        }
+        else if (ball.x + ball.radius >= SCREEN_WIDTH)
+        {
+            scoreManager.CpuScored();
+            ball.Reset();
+            isBallFrozen = true;
+        }
     }
 }
 
-void Game::Render() const {
+void Game::Render() const
+{
     BeginDrawing();
     ClearBackground(DARKGREEN);
 
