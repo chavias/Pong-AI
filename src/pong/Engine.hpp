@@ -39,9 +39,9 @@ private:
 
     void updateBall();
 
-    void updatePaddle(int action1, int action2)
-    
+    void updatePaddle(int action1, int action2);
 
-}
+
+};
 
 }

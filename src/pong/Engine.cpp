@@ -24,6 +24,6 @@ void Engine::updateBall()
 
 void Engine::updatePaddle(int action1, int action2)
 {
-
+    
 }
 }
