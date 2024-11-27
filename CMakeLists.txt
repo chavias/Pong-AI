@@ -4,8 +4,11 @@ set(CMAKE_CXX_STANDARD 20)
 
 project(pong_dqn VERSION 1.0)
 
-# add_executable(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/src/pong/main.cpp)
 
+option(TEST_DQN "Test DQN" ON)
+
+
+# add_executable(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/src/pong/main.cpp)
 set(SOURCE_FILES 
     src/pong/Ball.cpp 
     src/pong/Paddle.cpp 
@@ -48,8 +51,9 @@ target_link_directories(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME} raylib)
 
-
-# Enable testing
-include(CTest)
-enable_testing()
-add_subdirectory(src/dqn)
+if (TEST_DQN)
+    # Enable testing
+    include(CTest)
+    enable_testing()
+    add_subdirectory(src/dqn)
+endif()

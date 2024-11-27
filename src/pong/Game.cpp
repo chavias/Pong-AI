@@ -44,7 +44,6 @@ void Game::Update(float deltaTime)
     }
     else
     {
-
         ball.Update(deltaTime);
         if (CheckCollisionCircleRec(Vector2{ball.x, ball.y}, ball.radius,
                                     Rectangle{playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height}))
