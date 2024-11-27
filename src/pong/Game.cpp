@@ -2,12 +2,32 @@
 #include "constants.hpp"
 #include <iostream>
 
-Game::Game()
-    : playerPaddle(SCREEN_WIDTH - PADDLE_WIDTH - 10, SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2),
-      cpuPaddle(10, SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2),
-      resetTimer(0.0f),
-      isBallFrozen(false)
+
+// Game::Game(std::unique_ptr<Paddle> &&p1 = {}, std::unique_ptr<Paddle> &&p2 = {}) 
+//         : paddle1(std::move(p1)),
+//           paddle2(std::move(p2)),
+//           resetTimer(0.0f),
+//           isBallFrozen(false),
+//           ball(std::make_unique<Ball>())
+// {
+//             InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Pong");
+//             SetTargetFPS(60);
+// }
+
+Game::Game(std::unique_ptr<Paddle> &&p1, std::unique_ptr<Paddle> &&p2) 
+    : paddle1(std::move(p1)),
+      paddle2(std::move(p2)),
+      resetTimer(0.0f), isBallFrozen(false),
+      ball(std::make_unique<Ball>()),
+      scoreManager(std::make_unique<ScoreManager>())
 {
+    if (!paddle1) {
+    paddle1 = std::make_unique<CpuPaddle>(PADDLE1_X, PADDLE_Y);
+    }
+    if (!paddle2) {
+        paddle2 = std::make_unique<PlayerPaddle>(PADDLE2_X, PADDLE_Y);
+    }
+
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Pong");
     SetTargetFPS(60);
 }
@@ -30,13 +50,13 @@ void Game::Run()
     }
 }
 
-/// @brief Single step of the game 
+/// @brief Provides State and Rewards for the Agent to learn 
 /// @param deltaTime 
-/// @return state and rewards
+/// @return EpisodeParameter structure represents current reward and game state 
 EpisodeParameter Game::Step(float deltaTime)
 {
-    playerPaddle.Update(deltaTime);
-    cpuPaddle.UpdateWithBall(deltaTime, ball.y);
+    paddle1->Update(deltaTime, ball->y);
+    paddle2->Update(deltaTime, ball->y);
 
     if (isBallFrozen)
     {
@@ -46,94 +66,48 @@ EpisodeParameter Game::Step(float deltaTime)
         {
             isBallFrozen = false;
             resetTimer = 0.0f; // Reset the timer
-            ball.StartMoving();
+            ball->StartMoving();
         }
     }
     else
     {
-        ball.Update(deltaTime);
-        if (CheckCollisionCircleRec(Vector2{ball.x, ball.y}, ball.radius,
-                                    Rectangle{playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height}))
+        ball->Update(deltaTime);
+        if (CheckCollisionCircleRec(Vector2{ball->x, ball->y}, ball->radius,
+                                    Rectangle{paddle1->x, paddle1->y, paddle1->width, paddle1->height}))
         {
-            ball.speed_x *= -1;
+            ball->speed_x *= -1;
         }
 
-        if (CheckCollisionCircleRec(Vector2{ball.x, ball.y}, ball.radius,
-                                    Rectangle{cpuPaddle.x, cpuPaddle.y, cpuPaddle.width, cpuPaddle.height}))
+        if (CheckCollisionCircleRec(Vector2{ball->x, ball->y}, ball->radius,
+                                    Rectangle{paddle2->x, paddle2->y, paddle2->width, paddle2->height}))
         {
-            ball.speed_x *= -1;
+            ball->speed_x *= -1;
         }
 
         // count score and reset
-        if (ball.x - ball.radius <= 0)
+        if (ball->x - ball->radius <= 0)
         {
-            scoreManager.PlayerScored();
+            scoreManager->PlayerScored();
 
             reward1+=1; // increase reward 
 
-            ball.Reset();
+            ball->Reset();
             isBallFrozen = true;
         }
-        else if (ball.x + ball.radius >= SCREEN_WIDTH)
+        else if (ball->x + ball->radius >= SCREEN_WIDTH)
         {
-            scoreManager.CpuScored();
+            scoreManager->CpuScored();
             
             reward2+=1; // increase reward 
 
-            ball.Reset();
+            ball->Reset();
             isBallFrozen = true;
         }
     }
-    return {ball.x, ball.y, ball.speed_x, ball.speed_y, cpuPaddle.y,
+    return {ball->x, ball->y, ball->speed_x, ball->speed_y, paddle1->y, paddle2->y,
             reward1, reward2, false};
 }
 
-void Game::Update(float deltaTime)
-{
-    playerPaddle.Update(deltaTime);
-    cpuPaddle.UpdateWithBall(deltaTime, ball.y);
-
-    if (isBallFrozen)
-    {
-        // Update the reset timer
-        resetTimer += deltaTime;
-        if (resetTimer >= 1.0f)
-        {
-            isBallFrozen = false;
-            resetTimer = 0.0f; // Reset the timer
-            ball.StartMoving();
-        }
-    }
-    else
-    {
-        ball.Update(deltaTime);
-        if (CheckCollisionCircleRec(Vector2{ball.x, ball.y}, ball.radius,
-                                    Rectangle{playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height}))
-        {
-            ball.speed_x *= -1;
-        }
-
-        if (CheckCollisionCircleRec(Vector2{ball.x, ball.y}, ball.radius,
-                                    Rectangle{cpuPaddle.x, cpuPaddle.y, cpuPaddle.width, cpuPaddle.height}))
-        {
-            ball.speed_x *= -1;
-        }
-
-        // count score and reset
-        if (ball.x - ball.radius <= 0)
-        {
-            scoreManager.PlayerScored();
-            ball.Reset();
-            isBallFrozen = true;
-        }
-        else if (ball.x + ball.radius >= SCREEN_WIDTH)
-        {
-            scoreManager.CpuScored();
-            ball.Reset();
-            isBallFrozen = true;
-        }
-    }
-}
 
 void Game::Render() const
 {
@@ -144,10 +118,10 @@ void Game::Render() const
     // DrawCircle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 150, LIME);
     DrawLine(SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 2, SCREEN_HEIGHT, WHITE);
 
-    ball.Draw();
-    playerPaddle.Draw();
-    cpuPaddle.Draw();
-    scoreManager.DrawScore();
+    ball->Draw();
+    paddle1->Draw();
+    paddle2->Draw();
+    scoreManager->DrawScore();
 
     EndDrawing();
 }

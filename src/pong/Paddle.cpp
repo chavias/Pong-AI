@@ -2,7 +2,6 @@
 #include "Paddle.hpp"
 
 
-
 Paddle::Paddle(float startX, float startY) 
     : x(startX), y(startY), width(PADDLE_WIDTH), height(PADDLE_HEIGHT), speed(PADDLE_SPEED) {}
 
@@ -22,7 +21,7 @@ void Paddle::Draw() const {
 
 PlayerPaddle::PlayerPaddle(float startX, float startY) : Paddle(startX, startY) {}
 
-void PlayerPaddle::Update(float deltaTime) {
+void PlayerPaddle::Update(float deltaTime, float ballY) {
     if (IsKeyDown(KEY_UP)) {
         y -= speed * deltaTime;
     }
@@ -35,9 +34,7 @@ void PlayerPaddle::Update(float deltaTime) {
 
 CpuPaddle::CpuPaddle(float startX, float startY) : Paddle(startX, startY) {}
 
-void CpuPaddle::Update(float deltaTime) {}
-
-void CpuPaddle::UpdateWithBall(float deltaTime, float ballY) {
+void CpuPaddle::Update(float deltaTime, float ballY) {
     if (y + height / 2 > ballY) {
         y -= speed * deltaTime;
     }
