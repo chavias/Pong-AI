@@ -38,11 +38,15 @@ endif()
 if(NOT EXISTS "${PROJECT_SOURCE_DIR}/external/raylib/CMakeLists.txt")
     message(FATAL_ERROR "The raylib submodule was not downloaded! GIT_SUBMODULE was turned off or failed")
 endif()
+if(NOT EXISTS "${PROJECT_SOURCE_DIR}/external/eigen/CMakeLists.txt")
+    message(FATAL_ERROR "The eigen submodule was not downloaded! GIT_SUBMODULE was turned off or failed")
+endif()
 
 add_subdirectory(external/raylib)
 
 target_include_directories(${PROJECT_NAME}
             PUBLIC ${PROJECT_SOURCE_DIR}/external/raylib/src/
+            PUBLIC ${PROJECT_SOURCE_DIR}/external/eigen/src/
 )
 
 target_link_directories(${PROJECT_NAME}

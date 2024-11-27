@@ -1,3 +1,4 @@
+#pragma once
 #include "Ball.hpp"
 #include "Paddle.hpp"
 #include "raylib.h"
@@ -6,8 +7,6 @@
 
 struct EpisodeParameter
 {
-    // std::array<float, 2> Ball_coordinates;
-    // std::array<float, 2> Ball_velocity;
     float ball_x;
     float ball_y;
 
