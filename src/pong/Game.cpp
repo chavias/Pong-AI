@@ -80,7 +80,7 @@ EpisodeParameter Game::Step(float deltaTime)
             scoreManager->PlayerScored();
 
             reward1 -= 1; // decrease reward 
-
+            gameEnd = true;
             ball->Reset();
             isBallFrozen = true;
         }
@@ -89,13 +89,14 @@ EpisodeParameter Game::Step(float deltaTime)
             scoreManager->CpuScored();
             
             reward2 -= 1; // decrease reward 
-
+            gameEnd = true;
             ball->Reset();
+            
             isBallFrozen = true;
         }
     }
     return {ball->x, ball->y, ball->speed_x, ball->speed_y, paddle1->y, paddle2->y,
-            reward1, reward2, false};
+            reward1, reward2, gameEnd};
 }
 
 

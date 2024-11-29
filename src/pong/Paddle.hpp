@@ -4,8 +4,15 @@
 /**
  * Implementation of the Strategy pattern for the Paddles
  */
+enum Action
+{
+    WAIT = 0,
+    UP,
+    DOWN
+};
 
-class Paddle {
+class Paddle
+{
 protected:
     void LimitMovement();
 
@@ -21,14 +28,28 @@ public:
     void Draw() const;
 };
 
-class PlayerPaddle : public Paddle {
+class PlayerPaddle : public Paddle
+{
 public:
     PlayerPaddle(float startX, float startY);
     void Update(float deltaTime, float ballY) override;
 };
 
-class CpuPaddle : public Paddle {
+class CpuPaddle : public Paddle
+{
 public:
     CpuPaddle(float startX, float startY);
     void Update(float deltaTime, float ballY) override;
+};
+
+class AIPaddle : public Paddle
+{
+public:
+    Action action = WAIT;
+
+public:
+    AIPaddle(float startX, float startY);
+    void Update(float deltaTime, float ballY) override;
+
+    void setAction(Action act);
 };

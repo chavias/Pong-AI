@@ -2,26 +2,19 @@
 #include <Eigen/Dense>
 
 
-struct MemoryElement
+class Agent
 {
-    int reward1 = 0;
-    int reward2 = 0; 
+public:
+    Eigen::MatrixXd W1;
+    Eigen::MatrixXd W2;
+    //Eigen::Matrix<double, 21, 7> W1;
+    //Eigen::Matrix<double, 7, 3> W2;
 
-    int action1 = 0;
-    int action2 = 0;
+public:
+    Agent::Agent(size_t L1, size_t numColumnsW1, size_t numRowsW2, size_t numColumnsW2);
 
-    bool endGame = 0;
-
-    MemoryElement sample(); // get random sample from the memory array
-};
-
-
-
-struct Agent
-{
-    Eigen::Matrix<double, 21, 7> W1;
-    Eigen::Matrix<double, 7, 3> W2;
-
+private:
+    Eigen::MatrixXd generateRandomMatrix(size_t rows, size_t cols, double minVal, double maxVal);
 };
 
 struct Target 
