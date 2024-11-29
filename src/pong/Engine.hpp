@@ -9,7 +9,6 @@
  * The action of the agent are represented with [0,1,2]
  */
 
-
 namespace pong 
 {
 

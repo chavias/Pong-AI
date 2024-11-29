@@ -2,18 +2,6 @@
 #include "constants.hpp"
 #include <iostream>
 
-
-// Game::Game(std::unique_ptr<Paddle> &&p1 = {}, std::unique_ptr<Paddle> &&p2 = {}) 
-//         : paddle1(std::move(p1)),
-//           paddle2(std::move(p2)),
-//           resetTimer(0.0f),
-//           isBallFrozen(false),
-//           ball(std::make_unique<Ball>())
-// {
-//             InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Pong");
-//             SetTargetFPS(60);
-// }
-
 Game::Game(std::unique_ptr<Paddle> &&p1, std::unique_ptr<Paddle> &&p2) 
     : paddle1(std::move(p1)),
       paddle2(std::move(p2)),
@@ -45,7 +33,7 @@ void Game::Run()
         float deltaTime = GetFrameTime();
         // Update(deltaTime);
         EpisodeParameter state = Step(deltaTime);
-        // std::cout << state.reward1 << ' ' << state.reward2 << "\n";
+        std::cout << state.reward1 << state.reward2 << '\n';
         Render();
     }
 }
@@ -76,12 +64,14 @@ EpisodeParameter Game::Step(float deltaTime)
                                     Rectangle{paddle1->x, paddle1->y, paddle1->width, paddle1->height}))
         {
             ball->speed_x *= -1;
+            reward1 += 1; // increase reward
         }
 
         if (CheckCollisionCircleRec(Vector2{ball->x, ball->y}, ball->radius,
                                     Rectangle{paddle2->x, paddle2->y, paddle2->width, paddle2->height}))
         {
             ball->speed_x *= -1;
+            reward2 += 1; // increase reward
         }
 
         // count score and reset
@@ -89,7 +79,7 @@ EpisodeParameter Game::Step(float deltaTime)
         {
             scoreManager->PlayerScored();
 
-            reward1+=1; // increase reward 
+            reward1 -= 1; // decrease reward 
 
             ball->Reset();
             isBallFrozen = true;
@@ -98,7 +88,7 @@ EpisodeParameter Game::Step(float deltaTime)
         {
             scoreManager->CpuScored();
             
-            reward2+=1; // increase reward 
+            reward2 -= 1; // decrease reward 
 
             ball->Reset();
             isBallFrozen = true;

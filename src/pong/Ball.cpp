@@ -27,3 +27,4 @@ void Ball::Update(float deltaTime) {
 void Ball::Draw() const {
     DrawCircle(static_cast<int>(x), static_cast<int>(y), radius, WHITE);
 }
+

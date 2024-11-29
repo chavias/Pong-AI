@@ -4,9 +4,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 project(pong_dqn VERSION 1.0)
 
-
 option(TEST_DQN "Test DQN" ON)
-
 
 # add_executable(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/src/pong/main.cpp)
 set(SOURCE_FILES 
