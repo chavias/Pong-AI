@@ -93,7 +93,7 @@ void Game::Render() const
     ClearBackground(DARKGREEN);
 
     DrawRectangle(SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 2, SCREEN_HEIGHT, DARKGREEN);
-    // DrawCircle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 150, LIME);
+    DrawCircle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 150, LIME);
     DrawLine(SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 2, SCREEN_HEIGHT, WHITE);
 
     ball->Draw();
@@ -104,9 +104,12 @@ void Game::Render() const
     EndDrawing();
 }
 
-void Game::Reset()
+EpisodeParameter Game::Reset()
 {
     ball->Reset();
     paddle1->Reset();
     paddle2->Reset();
+    Eigen::Matrix<float, 6, 1> pongVariables(ball->x, ball->y, ball->speed_x, ball->speed_y, paddle1->y, paddle2->y);
+    return {pongVariables, WAIT, WAIT, 0, 0, false};
+
 }

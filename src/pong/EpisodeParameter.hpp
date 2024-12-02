@@ -4,7 +4,8 @@
 #include "Action.hpp"
 
 struct EpisodeParameter
-{
+{   
+    // pong variables could be initialist with 
     Eigen::Matrix<float, 6, 1> pongVariables;
     //     float ball_x;
     //     float ball_y;
@@ -23,5 +24,4 @@ struct EpisodeParameter
     int reward1 = 0;
     int reward2 = 0;
     bool gameEnd = false;
-
 };

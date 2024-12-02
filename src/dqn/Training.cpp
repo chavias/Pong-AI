@@ -2,19 +2,21 @@
 #include "constants.hpp"
 #include "Random.hpp"
 
-/// @brief Plays pong with random actions for both agents and saves everything in memory
+/// @brief Populates memory with one game of pong
 void Training::populateMemoryRandom()
 {
-    EpisodeParameter initialEpisode = game->Step(deltaTime, random->randomAction(), random->randomAction());
-    mem->append(initialEpisode);
-    
     for (int i = 0; i < startLearning; i++)
     {
         int t = 1;
+        EpisodeParameter ep = mem->getCurrent();
         while (!ep.gameEnd && t < maxRunningTime)
         {
-            ep mem->Rep
-            mem->append();
+            ep.action1 = random->randomAction();
+            ep.action2 = random->randomAction();
+            EpisodeParameter next= game->Step(deltaTime,
+                                              random->randomAction(),
+                                              random->randomAction());
+            t++;
         }
     }
 };
@@ -26,7 +28,8 @@ void Training::train()
     {
         epsilon = std::max(epsilonMin, epsilon - epsilonDel);
 
-        EpisodeParameter ep = mem->ReplayMemory[idx];
+        // get struct to populate
+        EpisodeParameter ep = mem->getCurrent();
         ep.gameEnd = false;
 
         int totalReward1 = 0;
@@ -189,64 +192,3 @@ Training::gradient(const EpisodeParameter& ep, bool isAgent)
     // Return gradients as a pair
     return std::make_pair(dW1, dW2);
 }
-
-
-// RandomAgent function
-void RandomAgent(int &idx, int MaxMemory, int MaxRuntime, int &t, float &R1, float &R2)
-{
-    // Ensure the Memory vector is large enough
-    if (Memory.size() < MaxMemory)
-    {
-        Memory.resize(MaxMemory);
-    }
-
-    // Initialize Pong
-    Memory[idx].pongVariables = InitializePong();
-    Memory[idx].game_end = false;
-
-    t = 1; // Reset runtime counter
-    while (t < MaxRuntime && !Memory[idx].game_end)
-    {
-        // Choose random actions
-        Memory[idx].action1 = rand() % 3 + 1; // Random number in [1, 3]
-        Memory[idx].action2 = rand() % 3 + 1;
-
-        // Execute next step
-        auto [newPongVars, gameEnd, reward1, reward2] = PongNextStep(
-            Memory[idx].pongVariables, Memory[idx].action1, Memory[idx].action2);
-
-        // Save new state into the next memory slot
-        int nextIdx = (idx + 1) % MaxMemory;
-        Memory[nextIdx].pongVariables = newPongVars;
-        Memory[nextIdx].game_end = gameEnd;
-        Memory[idx].reward1 = reward1;
-        Memory[idx].reward2 = reward2;
-
-        // Update indices and runtime
-        t++;
-        idx = nextIdx;
-    }
-
-    // Set rewards for the last step
-    R1 = Memory[(idx - 1 + MaxMemory) % MaxMemory].reward1;
-    R2 = Memory[(idx - 1 + MaxMemory) % MaxMemory].reward2;
-
-    // Update idx for the next call
-    idx = (idx + 1) % MaxMemory;
-}
-// for (int i = 0; i < startLearning; i++)
-//         {
-
-//             bool gameEnd = false;
-
-//             while (!gameEnd)
-//             {
-//                 auto Q1 = DQN(agent1, PongVariable);
-//                 auto Q1 = DQN(agent2, PongVariable);
-
-//                 EpisodeParameter episode = game->Step(deltaTime, action1, action2);
-
-//                 TotalReward1 += reward1;
-//                 TotalReward2 += reward2;
-//             }
-//         }
