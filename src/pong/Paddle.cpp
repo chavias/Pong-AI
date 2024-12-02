@@ -23,7 +23,7 @@ void Paddle::Draw() const
 
 PlayerPaddle::PlayerPaddle(float startX, float startY) : Paddle(startX, startY) {}
 
-void PlayerPaddle::Update(float deltaTime, float ballY)
+void PlayerPaddle::Update(float deltaTime, float ballY, Action act)
 {
     if (IsKeyDown(KEY_UP))
     {
@@ -38,7 +38,7 @@ void PlayerPaddle::Update(float deltaTime, float ballY)
 
 CpuPaddle::CpuPaddle(float startX, float startY) : Paddle(startX, startY) {}
 
-void CpuPaddle::Update(float deltaTime, float ballY)
+void CpuPaddle::Update(float deltaTime, float ballY, Action act)
 {
     if (y + height / 2 > ballY)
     {
@@ -53,7 +53,7 @@ void CpuPaddle::Update(float deltaTime, float ballY)
 
 AIPaddle::AIPaddle(float startX, float startY) : Paddle(startX, startY) {}
 
-void AIPaddle::Update(float deltaTime, float ballY)
+void AIPaddle::Update(float deltaTime, float ballY, Action action)
 {
     if (action == DOWN)
     {
@@ -64,9 +64,4 @@ void AIPaddle::Update(float deltaTime, float ballY)
         y += speed * deltaTime;
     }
     LimitMovement();
-}
-
-void AIPaddle::setAction(Action act)
-{
-    action = act;
 }

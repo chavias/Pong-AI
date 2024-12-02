@@ -32,7 +32,9 @@ void Game::Run()
     {
         float deltaTime = GetFrameTime();
         // Update(deltaTime);
-        EpisodeParameter state = Step(deltaTime);
+        Action action1 = WAIT;
+        Action action2 = WAIT;
+        EpisodeParameter state = Step(deltaTime, action1, action2);
         std::cout << state.reward1 << state.reward2 << '\n';
         Render();
     }
@@ -41,10 +43,10 @@ void Game::Run()
 /// @brief Provides State and Rewards for the Agent to learn 
 /// @param deltaTime 
 /// @return EpisodeParameter structure represents current reward and game state 
-EpisodeParameter Game::Step(float deltaTime)
+EpisodeParameter Game::Step(float deltaTime, Action action1=WAIT, Action action2=WAIT)
 {
-    paddle1->Update(deltaTime, ball->y);
-    paddle2->Update(deltaTime, ball->y);
+    paddle1->Update(deltaTime, ball->y, action1);
+    paddle2->Update(deltaTime, ball->y, action2);
 
     if (isBallFrozen)
     {
@@ -95,8 +97,8 @@ EpisodeParameter Game::Step(float deltaTime)
             isBallFrozen = true;
         }
     }
-    return {ball->x, ball->y, ball->speed_x, ball->speed_y, paddle1->y, paddle2->y,
-            reward1, reward2, gameEnd};
+    Eigen::Matrix<float, 6, 1> pongVariables(ball->x, ball->y, ball->speed_x, ball->speed_y, paddle1->y, paddle2->y);
+    return {pongVariables, reward1, reward2, gameEnd};
 }
 
 

@@ -37,7 +37,7 @@ public:
     }
 
 public:  
-    EpisodeParameter Step(float deltaTime);
+    EpisodeParameter Step(float deltaTime, Action action1, Action action2);
 
 
 private:
