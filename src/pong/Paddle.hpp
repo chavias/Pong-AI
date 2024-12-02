@@ -20,6 +20,9 @@ public:
     virtual ~Paddle() = default;
 
     virtual void Update(float deltaTime, float ballY, Action action) = 0;
+
+    void Reset();
+
     void Draw() const;
 };
 

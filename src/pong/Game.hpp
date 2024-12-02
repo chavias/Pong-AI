@@ -19,16 +19,13 @@ private:
     std::unique_ptr<ScoreManager> scoreManager;
 
     // seperate rewards might be unneccessary if reward = score
-    int reward1 = 0;
+    int reward1 = 0; // could be moved to Step function
     int reward2 = 0;
-
-    bool gameEnd = false;
-    float resetTimer;
-    bool isBallFrozen;
 
 public:
     explicit Game(std::unique_ptr<Paddle>&& p1 = {}, std::unique_ptr<Paddle>&& p2 = {});
     ~Game();
+
     void Run();
 
     void set_paddles(std::unique_ptr<Paddle>&& p1, std::unique_ptr<Paddle>&& p2)
@@ -46,4 +43,6 @@ private:
     void Update(float deltaTime);
 
     void Render() const;
+
+    void Reset();
 };

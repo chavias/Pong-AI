@@ -16,6 +16,11 @@ void Paddle::LimitMovement()
     }
 }
 
+void Paddle::Reset()
+{
+    y = PADDLE_Y;
+}
+
 void Paddle::Draw() const
 {
     DrawRectangleRounded(Rectangle{x, y, width, height}, 0.8, 0, WHITE);
