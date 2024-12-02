@@ -41,9 +41,9 @@ void Game::Run()
 }
 
 /// @brief Provides State and Rewards for the Agent to learn 
-/// @param deltaTime 
+/// @param deltaTime, action1, action2,
 /// @return EpisodeParameter structure represents current reward and game state 
-EpisodeParameter Game::Step(float deltaTime, Action action1=WAIT, Action action2=WAIT)
+EpisodeParameter Game::Step(float deltaTime, Action action1, Action action2)
 {
     paddle1->Update(deltaTime, ball->y, action1);
     paddle2->Update(deltaTime, ball->y, action2);
@@ -98,7 +98,7 @@ EpisodeParameter Game::Step(float deltaTime, Action action1=WAIT, Action action2
         }
     }
     Eigen::Matrix<float, 6, 1> pongVariables(ball->x, ball->y, ball->speed_x, ball->speed_y, paddle1->y, paddle2->y);
-    return {pongVariables, reward1, reward2, gameEnd};
+    return {pongVariables, action1, action2, reward1, reward2, gameEnd};
 }
 
 

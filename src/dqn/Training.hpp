@@ -4,9 +4,10 @@
 #include "Game.hpp"
 #include "DQN.hpp"
 #include "MiniBatchSGD.hpp"
+#include "EpisodeParameter.hpp"
+#include <random>
 #include <algorithm>
 #include <memory>
-#include "EpisodeParameter.hpp"
 
 class Training
 {
@@ -21,7 +22,7 @@ public:
     int maxRunningTime = 500;
     int miniBatchSize = 64;
 
-    // Game parameter 
+    // Game parameter
     float deltaTime;
 
     // epsilon greedy parameter
@@ -36,7 +37,7 @@ public:
     // setup Memory
     std::unique_ptr<Memory> mem;
 
-    // initialize Game 
+    // initialize Game
     std::unique_ptr<Game> game;
 
     // Initialize Agents and Target
@@ -49,20 +50,21 @@ public:
     std::unique_ptr<Agent> target1;
     std::unique_ptr<Agent> target2;
 
+    std::unique_ptr<Random> random;
+
     // Populate the Memory randomly
     void populateMemoryRandom();
 
     // Main training loop
     void train();
 
-    // calculates gradient
-    std::pair<Eigen::MatrixXf, Eigen::MatrixXf>
-    gradient(const EpisodeParameter& ep, bool isAgent);
-    
     // performs gradient descent on specified agent
     void minibatchSGD(bool isAgent);
 
-    // 
-    void test();
+    // calculates gradient
+    std::pair<Eigen::MatrixXf, Eigen::MatrixXf>
+    gradient(const EpisodeParameter &ep, bool isAgent);
 
+    //
+    void test();
 };

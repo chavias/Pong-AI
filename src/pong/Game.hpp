@@ -1,6 +1,7 @@
 #pragma once
 #include "Ball.hpp"
 #include "Paddle.hpp"
+#include "Action.hpp"
 #include "raylib.h"
 #include "ScoreManager.hpp"
 #include "constants.hpp"
@@ -18,7 +19,7 @@ private:
     std::unique_ptr<ScoreManager> scoreManager;
 
     // seperate rewards might be unneccessary if reward = score
-    int reward1 = 0; 
+    int reward1 = 0;
     int reward2 = 0;
 
     bool gameEnd = false;

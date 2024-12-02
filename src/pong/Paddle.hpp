@@ -1,17 +1,10 @@
 #pragma once
 #include "raylib.h"
-
+#include "Action.hpp"
 /**
  * Implementation of the Strategy pattern for the Paddles
  */
 
-// Enum for the 3 actions WAIT, UP, DOWN
-enum Action
-{
-    WAIT = 0,
-    UP,
-    DOWN
-};
 
 class Paddle
 {

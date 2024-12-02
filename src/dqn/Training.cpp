@@ -1,21 +1,26 @@
 #include "Training.hpp"
 #include "constants.hpp"
+#include "Random.hpp"
 
 /// @brief Plays pong with random actions for both agents and saves everything in memory
 void Training::populateMemoryRandom()
 {
+    EpisodeParameter initialEpisode = game->Step(deltaTime, random->randomAction(), random->randomAction());
+    mem->append(initialEpisode);
+    
     for (int i = 0; i < startLearning; i++)
     {
+        int t = 1;
+        while (!ep.gameEnd && t < maxRunningTime)
+        {
+            ep mem->Rep
+            mem->append();
+        }
     }
 };
 
 void Training::train()
 {
-    std::random_device rd;                                       // Seed source
-    std::mt19937 gen(rd());                                      // Mersenne Twister generator
-    std::uniform_real_distribution<float> distEpsilon(0.0, 1.0); // for epsilon
-    std::uniform_int_distribution<int> distAction(1, 3);
-
     int idx = 0;
     for (int episode = 0; episode < numEpisodes; episode++)
     {
@@ -33,8 +38,8 @@ void Training::train()
         {
             // Agent 1
             // with probability epsilon choose random action
-            if (distEpsilon(gen) < epsilon)
-                ep.action1 = (Action)distAction(gen);
+            if (random->randomEpsilon() < epsilon)
+                ep.action1 = random->randomAction();
             else
             {
                 Eigen::Matrix<float, 3, 1> out = DQN(agent1, ep.pongVariables);
@@ -45,11 +50,11 @@ void Training::train()
             }
             // Agent 2
             // with probability epsilon choose random action
-            if (distEpsilon(gen) < epsilon)
-                ep.action2 = (Action)distAction(gen);
+            if (random->randomEpsilon() < epsilon)
+                ep.action2 = random->randomAction();
             else
             {
-                Eigen::Matrix<float, 3, 1> out = DQN(agent1, ep.pongVariables);
+                Eigen::Matrix<float, 3, 1> out = DQN(agent2, ep.pongVariables);
                 // Find the maximum value and its index
                 Action outAction;
                 float max_value = out.maxCoeff(&outAction);
@@ -134,7 +139,6 @@ void Training::minibatchSGD(bool isAgent)
     agent->W2 = (learningRate / miniBatchSize) * dW2 + (1.0f - regularization) * agent->W2;
 }
 
-
 std::pair<Eigen::MatrixXf, Eigen::MatrixXf>
 Training::gradient(const EpisodeParameter& ep, bool isAgent)
 {
@@ -186,12 +190,6 @@ Training::gradient(const EpisodeParameter& ep, bool isAgent)
     return std::make_pair(dW1, dW2);
 }
 
-
-
-
-
-std::tuple<PongVariables, bool, float, float> PongNextStep(
-    const PongVariables &pongVars, int action1, int action2);
 
 // RandomAgent function
 void RandomAgent(int &idx, int MaxMemory, int MaxRuntime, int &t, float &R1, float &R2)
