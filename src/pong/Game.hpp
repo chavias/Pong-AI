@@ -18,10 +18,6 @@ private:
     std::unique_ptr<Paddle> paddle2;
     std::unique_ptr<ScoreManager> scoreManager;
 
-    // seperate rewards might be unneccessary if reward = score
-    int reward1 = 0; // could be moved to Step function
-    int reward2 = 0;
-
 public:
     explicit Game(std::unique_ptr<Paddle>&& p1 = {}, std::unique_ptr<Paddle>&& p2 = {});
     ~Game();

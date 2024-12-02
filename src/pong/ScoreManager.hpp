@@ -3,17 +3,17 @@
 
 class ScoreManager {
 private:
-    int player_score;
-    int cpu_score;
+    int leftScore;
+    int rightScore;
 
 public:
     ScoreManager();
 
-    void PlayerScored();
-    void CpuScored();
+    void LeftScored();
+    void RightScored();
     void DrawScore() const;
 
-    int GetPlayerScore() const;
-    int GetCpuScore() const;
+    int GetLeftScore() const;
+    int GetRIghtScore() const;
 };
 

@@ -1,25 +1,25 @@
 #include "ScoreManager.hpp"
 #include "constants.hpp"
 
-ScoreManager::ScoreManager() : player_score(0), cpu_score(0) {}
+ScoreManager::ScoreManager() : leftScore(0), rightScore(0) {}
 
-void ScoreManager::PlayerScored() {
-    player_score++;
+void ScoreManager::LeftScored() {
+    leftScore++;
 }
 
-void ScoreManager::CpuScored() {
-    cpu_score++;
+void ScoreManager::RightScored() {
+    rightScore++;
 }
 
 void ScoreManager::DrawScore() const {
-    DrawText(TextFormat("%i", cpu_score), SCREEN_WIDTH / 4, 20, 80, Fade(WHITE, 0.5));
-    DrawText(TextFormat("%i", player_score), 3 * SCREEN_WIDTH / 4 - 20, 20, 80, Fade(WHITE, 0.5));
+    DrawText(TextFormat("%i", rightScore), SCREEN_WIDTH / 4, 20, 80, Fade(WHITE, 0.5));
+    DrawText(TextFormat("%i", leftScore), 3 * SCREEN_WIDTH / 4 - 20, 20, 80, Fade(WHITE, 0.5));
 }
 
-int ScoreManager::GetPlayerScore() const {
-    return player_score;
+int ScoreManager::GetLeftScore() const {
+    return leftScore;
 }
 
-int ScoreManager::GetCpuScore() const {
-    return cpu_score;
+int ScoreManager::GetRIghtScore() const {
+    return rightScore;
 }

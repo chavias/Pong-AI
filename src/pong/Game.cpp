@@ -20,7 +20,6 @@ Game::Game(std::unique_ptr<Paddle> &&p1, std::unique_ptr<Paddle> &&p2)
     SetTargetFPS(60);
 }
 
-
 Game::~Game()
 {
     CloseWindow();
@@ -28,7 +27,6 @@ Game::~Game()
 
 void Game::Run()
 {
-
     while (!WindowShouldClose())
     {
         float deltaTime = GetFrameTime();
@@ -36,7 +34,7 @@ void Game::Run()
         Action action1 = WAIT;
         Action action2 = WAIT;
         EpisodeParameter state = Step(deltaTime, action1, action2);
-        std::cout << state.reward1 << state.reward2 << '\n';
+        // std::cout << state.gameEnd << '\n';
         Render();
     }
 }
@@ -47,6 +45,8 @@ void Game::Run()
 EpisodeParameter Game::Step(float deltaTime, Action action1, Action action2)
 {
     bool gameEnd = false;
+    int reward1 = 0;
+    int reward2 = 0;
     // Update paddles and ball
     paddle1->Update(deltaTime, ball->y, action1);
     paddle2->Update(deltaTime, ball->y, action2);
@@ -57,27 +57,27 @@ EpisodeParameter Game::Step(float deltaTime, Action action1, Action action2)
                                 Rectangle{paddle1->x, paddle1->y, paddle1->width, paddle1->height}))
     {
         ball->speed_x *= -1;
-        reward1 += 1; // increase reward
+        reward1 = 1; // increase reward
     }
     if (CheckCollisionCircleRec(Vector2{ball->x, ball->y}, ball->radius,
                                 Rectangle{paddle2->x, paddle2->y, paddle2->width, paddle2->height}))
     {
         ball->speed_x *= -1;
-        reward2 += 1; // increase reward
+        reward2 = 1; // increase reward
     }
 
     // count score and reset
     if (ball->x - ball->radius <= 0)
     {
-        scoreManager->PlayerScored();
-        reward1 -= 1; // decrease reward 
+        scoreManager->LeftScored();
+        reward1 = 1; // decrease reward 
         gameEnd = true;
         Reset();
     }
     else if (ball->x + ball->radius >= SCREEN_WIDTH)
     {
-        scoreManager->CpuScored();
-        reward2 -= 1; // decrease reward 
+        scoreManager->RightScored();
+        reward2 = 1; // decrease reward 
         gameEnd = true;
         Reset();
     }
