@@ -55,8 +55,12 @@ public:
     // Main training loop
     void train();
 
+    // calculates gradient
+    std::pair<Eigen::MatrixXf, Eigen::MatrixXf>
+    gradient(const EpisodeParameter& ep, bool isAgent);
+    
     // performs gradient descent on specified agent
-    void minibatchGradientSGD();
+    void minibatchSGD(bool isAgent);
 
     // 
     void test();

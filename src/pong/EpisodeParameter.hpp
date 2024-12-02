@@ -4,17 +4,17 @@
 
 
 
-struct PongVariables
-{
-    float ball_x;
-    float ball_y;
+// struct PongVariables
+// {
+//     float ball_x;
+//     float ball_y;
 
-    float ball_vx;
-    float ball_vy; 
+//     float ball_vx;
+//     float ball_vy; 
 
-    float paddle1;
-    float paddle2; 
-};
+//     float paddle1;
+//     float paddle2; 
+// };
 
 
 struct EpisodeParameter
