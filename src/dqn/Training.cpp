@@ -8,14 +8,11 @@ void Training::populateMemoryRandom()
     for (int i = 0; i < startLearning; i++)
     {
         int t = 1;
-        EpisodeParameter ep = mem->getCurrent();
         while (!ep.gameEnd && t < maxRunningTime)
         {
-            ep.action1 = random->randomAction();
-            ep.action2 = random->randomAction();
-            EpisodeParameter next= game->Step(deltaTime,
-                                              random->randomAction(),
-                                              random->randomAction());
+            EpisodeParameter ep = game->Step(deltaTime,random->randomAction(),
+                                                       random->randomAction())
+            mem->append(ep);
             t++;
         }
     }
@@ -23,13 +20,12 @@ void Training::populateMemoryRandom()
 
 void Training::train()
 {
-    int idx = 0;
     for (int episode = 0; episode < numEpisodes; episode++)
     {
         epsilon = std::max(epsilonMin, epsilon - epsilonDel);
 
         // get struct to populate
-        EpisodeParameter ep = mem->getCurrent();
+        EpisodeParameter ep = mem->getNext();
         ep.gameEnd = false;
 
         int totalReward1 = 0;
@@ -73,15 +69,14 @@ void Training::train()
             totalReward1 += nextEpisode.reward1;
             totalReward2 += nextEpisode.reward2;
 
-            // raise indices
-            idx = idx % mem->size + 1;
-            t++;
-
             // The looser of this round is trained next round
             if (nextEpisode.gameEnd)
             {
                 looser = (nextEpisode.reward1 < nextEpisode.reward2) ? true : false;
             }
+
+            // raise indices
+            t++;
         }
 
         // Record max reward and save weights for targets update

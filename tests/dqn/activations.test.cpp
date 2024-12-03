@@ -1,20 +1,7 @@
-#include <gtest/gtest.h>
-#include <cmath>
-#include <limits>
 #include "../../src/dqn/activations.hpp"
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
 
-// // Include the functions to be tested
-// template <typename T>
-// T derActivationF(const T& x) {
-//     return (x.array() > 0).cast<typename T::Scalar>();
-// }
-
-// template <typename T>
-// T activationF(const T& input) {
-//     return input.array().max(0); // ReLU example
-// }
 
 // Test for activationF (ReLU)
 TEST(ActivationFunctionTest, ReLUActivation) {

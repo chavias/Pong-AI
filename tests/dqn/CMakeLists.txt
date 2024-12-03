@@ -4,15 +4,23 @@ include_directories(${GTEST_INCLUDE_DIRS})
 
 # Add test executable
 add_executable(test_dqn
-    activations.test.cpp # Add test source files here
+    activations.test.cpp
+    Agent.test.cpp
+    Memory.test.cpp
     test_main.cpp 
 )
 
-target_sources(test_dqn PRIVATE ${PROJECT_SOURCE_DIR}/src/dqn/activations.cpp)
+# add test sources
+target_sources(test_dqn
+    PRIVATE ${PROJECT_SOURCE_DIR}/src/dqn/activations.cpp
+    PRIVATE ${PROJECT_SOURCE_DIR}/src/dqn/Agent.cpp
+    PRIVATE ${PROJECT_SOURCE_DIR}/src/dqn/Memory.cpp
+)
 
 # Include Eigen library
 target_include_directories(test_dqn
     PRIVATE ${PROJECT_SOURCE_DIR}/external/eigen
+    PRIVATE ${PROJECT_SOURCE_DIR}/external/raylib/src/
 )
 
 # Link the test executable with the main library and GTest

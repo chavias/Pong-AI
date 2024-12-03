@@ -1,5 +1,6 @@
 #pragma once
 #include <Eigen/Dense>
+#include <memory>
 
 
 class Agent
@@ -11,7 +12,7 @@ public:
     //Eigen::Matrix<double, 7, 3> W2;
 
 public:
-    Agent::Agent(size_t L1, size_t numColumnsW1, size_t numRowsW2, size_t numColumnsW2);
+    Agent(size_t L1, size_t numColumnsW1, size_t numRowsW2, size_t numColumnsW2);
 
     // Copy assignment operator to copy from an Agent
     Agent& operator=(const Agent& agent) {
@@ -28,7 +29,7 @@ public:
         }
         return *this;
     }
-private:
+//private:
     Eigen::MatrixXd generateRandomMatrix(size_t rows, size_t cols, double minVal, double maxVal);
 };
 
