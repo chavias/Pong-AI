@@ -1,14 +1,14 @@
 #include "Agent.hpp"
 #include <random>
 
-Eigen::MatrixXd Agent::generateRandomMatrix(size_t rows, size_t cols, double minVal, double maxVal)
+Eigen::MatrixXf Agent::generateRandomMatrix(size_t rows, size_t cols, float minVal, float maxVal)
 {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dis(minVal, maxVal);
 
     // Initialize the matrix and populate it with random values
-    Eigen::MatrixXd matrix(rows, cols);
+    Eigen::MatrixXf matrix(rows, cols);
     for (size_t i = 0; i < rows; ++i) {
         for (size_t j = 0; j < cols; ++j) {
             matrix(i, j) = dis(gen);

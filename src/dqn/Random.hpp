@@ -2,7 +2,7 @@
 #include <random>
 #include "Action.hpp"
 
-struct Random
+struct Rand
 {
 private:
     std::random_device rd; // Seed source
@@ -11,7 +11,7 @@ private:
     std::uniform_real_distribution<double> distEpsilon{0.0, 1.0}; // For epsilon (0.0 to 1.0)
 
 public:
-    Random() : gen(rd()) {} // Initialize the random generator once with the seed
+    Rand() : gen(rd()) {} // Initialize the random generator once with the seed
 
     Action randomAction()
     {

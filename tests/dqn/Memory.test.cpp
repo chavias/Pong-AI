@@ -12,7 +12,7 @@ protected:
     static constexpr size_t memory_capacity = 5;
     
     // Instance of Memory class
-    std::unique_ptr<Memory> memory  = std::make_unique<Memory>();
+    std::unique_ptr<Memory> memory;
     
     void SetUp() override
     {

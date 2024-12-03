@@ -3,7 +3,7 @@
 #include "Agent.hpp"
 #include "Game.hpp"
 #include "DQN.hpp"
-#include "MiniBatchSGD.hpp"
+#include "Random.hpp"
 #include "EpisodeParameter.hpp"
 #include <random>
 #include <algorithm>
@@ -35,22 +35,22 @@ public:
     int maxReward2 = 0;
 
     // setup Memory
-    std::unique_ptr<Memory> mem;
+    std::unique_ptr<Memory> mem = std::make_unique<Memory>();
 
     // initialize Game
-    std::unique_ptr<Game> game;
+    std::unique_ptr<Game> game = std::make_unique<Game>();
 
     // Initialize Agents and Target
-    std::unique_ptr<Agent> agent1;
-    std::unique_ptr<Agent> agent2;
+    std::unique_ptr<Agent> agent1 = std::make_unique<Agent>(3, 7, 0, 1);
+    std::unique_ptr<Agent> agent2 = std::make_unique<Agent>(3, 7, 0, 1);
 
-    std::unique_ptr<Agent> nextTarget1;
-    std::unique_ptr<Agent> nextTarget2;
+    std::unique_ptr<Agent> nextTarget1 = std::make_unique<Agent>(3, 7, 0, 1);
+    std::unique_ptr<Agent> nextTarget2 = std::make_unique<Agent>(3, 7, 0, 1);
 
-    std::unique_ptr<Agent> target1;
-    std::unique_ptr<Agent> target2;
+    std::unique_ptr<Agent> target1 = std::make_unique<Agent>(3, 7, 0, 1);
+    std::unique_ptr<Agent> target2 = std::make_unique<Agent>(3, 7, 0, 1);
 
-    std::unique_ptr<Random> random;
+    std::unique_ptr<Rand> random = std::make_unique<Rand>();
 
     // Populate the Memory randomly
     void populateMemoryRandom();

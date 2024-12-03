@@ -8,10 +8,12 @@ void Training::populateMemoryRandom()
     for (int i = 0; i < startLearning; i++)
     {
         int t = 1;
+        EpisodeParameter ep;
+        ep.gameEnd = false;
         while (!ep.gameEnd && t < maxRunningTime)
         {
             EpisodeParameter ep = game->Step(deltaTime,random->randomAction(),
-                                                       random->randomAction())
+                                                       random->randomAction());
             mem->append(ep);
             t++;
         }

@@ -6,12 +6,13 @@
 class Agent
 {
 public:
-    Eigen::MatrixXd W1;
-    Eigen::MatrixXd W2;
+    Eigen::MatrixXf W1;
+    Eigen::MatrixXf W2;
     //Eigen::Matrix<double, 21, 7> W1;
-    //Eigen::Matrix<double, 7, 3> W2;
+    //Eigen::Matrix<double, 3, 21> W2;
 
 public:
+    // 21, 7, 3, 21
     Agent(size_t L1, size_t numColumnsW1, size_t numRowsW2, size_t numColumnsW2);
 
     // Copy assignment operator to copy from an Agent
@@ -30,13 +31,13 @@ public:
         return *this;
     }
 //private:
-    Eigen::MatrixXd generateRandomMatrix(size_t rows, size_t cols, double minVal, double maxVal);
+    Eigen::MatrixXf generateRandomMatrix(size_t rows, size_t cols, float minVal, float maxVal);
 };
 
 struct Target 
 {
-    Eigen::MatrixXd W1;
-    Eigen::MatrixXd W2;
+    Eigen::MatrixXf W1;
+    Eigen::MatrixXf W2;
 
     // Default constructor
     Target() = default;
