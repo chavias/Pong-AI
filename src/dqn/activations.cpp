@@ -1,35 +1,17 @@
 #include "activations.hpp"
 
 template <typename T>
-T activationF(T x)
+T derActivationF(const T& x)
 {
-    // relu
-    x = std::max(static_cast<T>(0.0f), x);
-
-    // Sigmoid
-    //x = 1 / (1 + std::exp(-x));
-
-    return x;
+    return (x.array() > 0).template cast<typename T::Scalar>(); // Derivative of ReLU (1 for x > 0, 0 otherwise)
 }
 
 template <typename T>
-T derActivationF(T x)
+T activationF(const T& input)
 {
-    x = (x > 0) ? 1 : 0;
-
-    //x = x * (1 - x);
-
-    return x;
-}
-
-
-template <typename T>
-T activationF(const T& input) {
     return input.array().max(0); // ReLU example
 }
 
-
-
-// Explicit instantiation for the types you need
-template double activationF<double>(double);
-template double derActivationF<double>(double);
+// Explicit instantiations
+template Eigen::Vector3f activationF(const Eigen::Vector3f& input);
+template Eigen::Vector3f derActivationF(const Eigen::Vector3f& x);

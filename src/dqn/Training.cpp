@@ -136,7 +136,7 @@ void Training::minibatchSGD(bool isAgent)
         dW1 += dW1temp;
         dW2 += dW2temp;
     }
-
+    
     // Update the weights of the agent
     agent->W1 = (learningRate / miniBatchSize) * dW1 + (1.0f - regularization) * agent->W1;
     agent->W2 = (learningRate / miniBatchSize) * dW2 + (1.0f - regularization) * agent->W2;
@@ -174,6 +174,7 @@ Training::gradient(const EpisodeParameter& ep, bool isAgent)
     // Calculate delta for the hidden layer
     Eigen::VectorXf e1 = agentRef->W2.leftCols(agentRef->W2.cols() - 1).transpose() * delta2;
     Eigen::VectorXf delta1 = derActivationF(agentOut.head(agentOut.size() - 1)).cwiseProduct(e1);
+    // (derActivationF(hiddenLayerOutput) * W2.transpose()) * delta2
 
     // Normalize input like in DQN
     Eigen::Matrix<float, 6, 1> normalizedInput = ep.pongVariables.cwiseQuotient(

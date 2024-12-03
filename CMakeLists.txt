@@ -54,6 +54,6 @@ target_link_libraries(${PROJECT_NAME} raylib)
 if (TEST_DQN)
     # Enable testing
     include(CTest)
-    enable_testing()
-    add_subdirectory(src/dqn)
+    enable_testing()      
+    add_subdirectory(tests)
 endif()
