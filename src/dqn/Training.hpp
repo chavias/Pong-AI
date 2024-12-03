@@ -4,10 +4,10 @@
 #include "Game.hpp"
 #include "DQN.hpp"
 #include "Random.hpp"
-#include "EpisodeParameter.hpp"
+// #include "EpisodeParameter.hpp"
 #include <random>
 #include <algorithm>
-#include <memory>
+#include <memory>   
 
 class Training
 {

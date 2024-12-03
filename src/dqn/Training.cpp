@@ -45,9 +45,9 @@ void Training::train()
             {
                 Eigen::Matrix<float, 3, 1> out = DQN(agent1, ep.pongVariables);
                 // Find the maximum value and its index
-                Action outAction;
-                float max_value = out.maxCoeff(&outAction);
-                ep.action1 = outAction;
+                Eigen::Index idx;
+                float max_value = out.maxCoeff(&idx);
+                ep.action1 = static_cast<Action>(idx);
             }
             // Agent 2
             // with probability epsilon choose random action
@@ -57,9 +57,9 @@ void Training::train()
             {
                 Eigen::Matrix<float, 3, 1> out = DQN(agent2, ep.pongVariables);
                 // Find the maximum value and its index
-                Action outAction;
-                float max_value = out.maxCoeff(&outAction);
-                ep.action1 = outAction;
+                Eigen::Index idx;
+                float max_value = out.maxCoeff(&idx);
+                ep.action2 = static_cast<Action>(idx);
             }
 
             // Step game

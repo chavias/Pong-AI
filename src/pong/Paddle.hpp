@@ -1,11 +1,8 @@
 #pragma once
 #include "raylib.h"
 #include "Action.hpp"
-/**
- * Implementation of the Strategy pattern for the Paddles
- */
 
-
+// Base class for the strategy design pattern
 class Paddle
 {
 protected:

@@ -4,11 +4,17 @@
 #include <cmath>
 #include <Eigen/Dense>
 
+// template <typename T>
+// T derActivationF(const T& x)
+// {
+//     return (x.array() > 0).template cast<typename T::Scalar>(); // Derivative of ReLU
+// }
+
 template <typename T>
-T derActivationF(const T& x)
-{
-    return (x.array() > 0).template cast<typename T::Scalar>(); // Derivative of ReLU
+auto derActivationF(const T& x) {
+    return (x.array() > 0).template cast<typename T::Scalar>().matrix();
 }
+
 
 template <typename T>
 T activationF(const T& input)
