@@ -15,6 +15,7 @@ target_sources(test_dqn
     PRIVATE activations.test.cpp    
     PRIVATE Agent.test.cpp
     PRIVATE Memory.test.cpp
+    PRIVATE DQN.test.cpp
     # PRIVATE Training.test.cpp
 )
 
