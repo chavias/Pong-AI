@@ -5,26 +5,31 @@
 
 struct EpisodeParameter
 {   
-    // EpisodeParameter() 
-    //     : pongVariables(Eigen::Matrix<float, 6, 1>::Zero()), 
-    //       action1(WAIT),
-    //       action2(WAIT),
-    //       reward1(0),
-    //       reward2(0),
-    //       gameEnd(false)
-    // {}
+    EpisodeParameter() 
+        : pongVariables(Eigen::Matrix<float, 6, 1>::Zero()), 
+          action1(WAIT),
+          action2(WAIT),
+          reward1(0),
+          reward2(0),
+          gameEnd(false)
+    {};
 
-    // Initialize other members here if needed
-    // pong variables could be initialist with 
+    EpisodeParameter(Eigen::Matrix<float, 6, 1> variables,
+                    Action act1,
+                    Action act2,
+                    int rew1,
+                    int rew2,
+                    bool gameEnd)
+        : pongVariables(std::move(variables)), 
+          action1(act1),
+          action2(act2),
+          reward1(0),
+          reward2(0),
+          gameEnd(gameEnd)
+    {};
+
     Eigen::Matrix<float, 6, 1> pongVariables;
-    //     float ball_x;
-    //     float ball_y;
-
-    //     float ball_vx;
-    //     float ball_vy; 
-
-    //     float paddle1;
-    //     float paddle2;
+    //  ball_x, ball_y, ball_vx, ball_vy, paddle1 paddle2;
     
     // y coordinate of the center of the padddle
     Action action1 = WAIT;

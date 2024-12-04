@@ -1,7 +1,7 @@
 #include "Training.hpp"
 #include "constants.hpp"
 #include "Random.hpp"
-#include <omp.h>
+// #include <omp.h>
 
 
 /// @brief Populates memory with one game of pong
@@ -17,10 +17,8 @@ void Training::populateMemoryRandom()
         
         while (!ep.gameEnd && t < maxRunningTime)
         {
-            // EpisodeParameter ep = game->Step(deltaTime,random->randomAction(),
-            //                                            random->randomAction());
-
-            ep = game->Step(deltaTime, WAIT, WAIT);
+            ep = game->Step(deltaTime,random->randomAction(),
+                                                       random->randomAction());
             mem->append(ep);
             t++;
         }

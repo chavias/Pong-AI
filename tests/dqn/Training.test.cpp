@@ -13,7 +13,7 @@ protected:
 
     void SetUp() override {
         training = std::make_unique<Training>();
-        LOG("Training Constructed");
+        LOG("[+] Training Constructed");
     }
 
     // void TearDown() override {
@@ -29,12 +29,13 @@ TEST_F(TrainingTest, PopulateMemoryRandomAddsEpisodes) {
 
     //     Act
     training->populateMemoryRandom();
-    LOG("populate Memory returned");
+    LOG("[+] populate Memory returned");
     //     Assert
     EpisodeParameter ep = training->mem->sample();
+    LOG("[+] episode retrieved");
 
-    std::cout << ep.action1 << std::endl;
-
+    std::cout << ep.pongVariables << std::endl;
+    ASSERT_EQ(ep.pongVariables[0], 1040);
 }
 
 // Test for train

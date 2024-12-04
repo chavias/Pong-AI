@@ -110,6 +110,7 @@ EpisodeParameter Game::Reset()
     paddle1->Reset();
     paddle2->Reset();
     Eigen::Matrix<float, 6, 1> pongVariables(ball->x, ball->y, ball->speed_x, ball->speed_y, paddle1->y, paddle2->y);
-    return {pongVariables, WAIT, WAIT, 0, 0, false};
+    EpisodeParameter ep(pongVariables, WAIT, WAIT, 0, 0, false);
+    return ep;
 
 }
