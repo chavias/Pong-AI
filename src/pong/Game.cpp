@@ -14,10 +14,6 @@ Game::Game(std::unique_ptr<Paddle> &&p1, std::unique_ptr<Paddle> &&p2)
     if (!paddle2) {
         paddle2 = std::make_unique<PlayerPaddle>(PADDLE2_X, PADDLE_Y);
     }
-
-    // Should maybe moved to Run function
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Pong");
-    SetTargetFPS(60);
 }
 
 Game::~Game()
@@ -27,6 +23,10 @@ Game::~Game()
 
 void Game::Run()
 {
+    // Should maybe moved to the constructor
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Pong");
+    SetTargetFPS(60);
+
     while (!WindowShouldClose())
     {
         float deltaTime = GetFrameTime();

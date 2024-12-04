@@ -1,5 +1,6 @@
 #include "Agent.hpp"
 #include <random>
+#include <iostream>
 
 Eigen::MatrixXf Agent::generateRandomMatrix(size_t rows, size_t cols, float minVal, float maxVal)
 {

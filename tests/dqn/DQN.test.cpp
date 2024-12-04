@@ -83,7 +83,7 @@ TEST_F(DQNTest, EndToEnd) {
     expected_output << 1.0f, 1.0f, 1.0f; // Adjust based on exact logic
 
     Eigen::Matrix<float, 3, 1> result = DQN(agent, variables);
-    std::cout << result << std::endl;
+    // std::cout << result << std::endl;
     EXPECT_TRUE(result.isApprox(expected_output, 200.0f)) << "End-to-end computation failed.";
 }
 
@@ -98,7 +98,7 @@ TEST_F(DQNTest, RandomEndToEnd) {
     expected_output << 1.0f, 1.0f, 1.0f; // Adjust based on exact logic
 
     Eigen::Matrix<float, 3, 1> result = DQN(agent, variables);
-    std::cout << result << std::endl;
+    // std::cout << result << std::endl;
     EXPECT_TRUE(result.isApprox(expected_output, 200.0f)) << "random end-to-end computation failed.";
     EXPECT_TRUE(result[0] != result[1]) << "random end-to-end computation failed.";
 

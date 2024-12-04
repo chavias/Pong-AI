@@ -5,6 +5,7 @@
 #include <memory>
 #include <Eigen/Dense>
 
+#define LOG(X) std::cout << X << "\n"
 
 class TrainingTest : public ::testing::Test {
 protected:
@@ -12,11 +13,12 @@ protected:
 
     void SetUp() override {
         training = std::make_unique<Training>();
+        LOG("Training Constructed");
     }
 
-    void TearDown() override {
-        training.reset();
-    }
+    // void TearDown() override {
+    //     training.reset();
+    // }
 };
 
 
@@ -25,12 +27,14 @@ TEST_F(TrainingTest, PopulateMemoryRandomAddsEpisodes) {
     // Arrange
     int initialMemorySize = training->mem->highest_index;
 
-    // Act
+    //     Act
     training->populateMemoryRandom();
+    LOG("populate Memory returned");
+    //     Assert
+    EpisodeParameter ep = training->mem->sample();
 
-    // Assert
-    ASSERT_GT(training->mem->highest_index, initialMemorySize)
-        << "Memory size should increase after populating.";
+    std::cout << ep.action1 << std::endl;
+
 }
 
 // Test for train

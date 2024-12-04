@@ -38,6 +38,13 @@ if(NOT EXISTS "${PROJECT_SOURCE_DIR}/external/raylib/CMakeLists.txt")
 endif()
 
 
+
+find_package(OpenMP REQUIRED)
+
+# target_link_libraries(solver PRIVATE OpenMP::OpenMP_CXX)
+
+
+
 add_subdirectory(external/raylib)
 
 target_include_directories(${PROJECT_NAME}
@@ -49,7 +56,9 @@ target_link_directories(${PROJECT_NAME}
             PRIVATE ${PROJECT_SOURCE_DIR}/external/raylib/src/
 )
 
-target_link_libraries(${PROJECT_NAME} raylib)
+target_link_libraries(${PROJECT_NAME}
+                        PRIVATE raylib
+                        PRIVATE OpenMP::OpenMP_CXX)
 
 if (TEST_DQN)
     # Enable testing

@@ -5,6 +5,16 @@
 
 struct EpisodeParameter
 {   
+    // EpisodeParameter() 
+    //     : pongVariables(Eigen::Matrix<float, 6, 1>::Zero()), 
+    //       action1(WAIT),
+    //       action2(WAIT),
+    //       reward1(0),
+    //       reward2(0),
+    //       gameEnd(false)
+    // {}
+
+    // Initialize other members here if needed
     // pong variables could be initialist with 
     Eigen::Matrix<float, 6, 1> pongVariables;
     //     float ball_x;

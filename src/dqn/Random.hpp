@@ -1,6 +1,7 @@
 #pragma once
 #include <random>
 #include "Action.hpp"
+#include <iostream>
 
 struct Rand
 {

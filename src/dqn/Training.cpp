@@ -1,23 +1,31 @@
 #include "Training.hpp"
 #include "constants.hpp"
 #include "Random.hpp"
+#include <omp.h>
+
 
 /// @brief Populates memory with one game of pong
 void Training::populateMemoryRandom()
 {
+    // #pragma omp parallel for
     for (int i = 0; i < startLearning; i++)
     {
         int t = 1;
         EpisodeParameter ep;
         ep.gameEnd = false;
+
+        
         while (!ep.gameEnd && t < maxRunningTime)
         {
-            EpisodeParameter ep = game->Step(deltaTime,random->randomAction(),
-                                                       random->randomAction());
+            // EpisodeParameter ep = game->Step(deltaTime,random->randomAction(),
+            //                                            random->randomAction());
+
+            ep = game->Step(deltaTime, WAIT, WAIT);
             mem->append(ep);
             t++;
         }
     }
+    // std::cout << "mem filled" << std::endl;
 };
 
 void Training::train()

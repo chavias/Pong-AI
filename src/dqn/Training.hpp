@@ -15,15 +15,15 @@ public:
     // Learning parameter
     double learningRate = 6e-4;
     int updateTarget = 10001;
-    int startLearning = 5000;
+    int startLearning = 500; // 5000
     int numEpisodes = 46000;
     double discount = 0.95; // Discount in Bellman Equation
     double regularization = 0e-5;
-    int maxRunningTime = 500;
+    int maxRunningTime = 50; // 500
     int miniBatchSize = 64;
 
     // Game parameter
-    float deltaTime;
+    float deltaTime = 1;
 
     // epsilon greedy parameter
     double epsilon = 1;
@@ -38,7 +38,7 @@ public:
     std::unique_ptr<Memory> mem = std::make_unique<Memory>();
 
     // initialize Game
-    std::unique_ptr<Game> game = std::make_unique<Game>();
+    std::unique_ptr<Game> game = std::make_unique<Game>(); // initialize with ai paddles
 
     // Initialize Agents and Target
     std::unique_ptr<Agent> agent1 = std::make_unique<Agent>(3, 7, 0, 1);
