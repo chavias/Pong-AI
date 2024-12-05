@@ -68,6 +68,7 @@ TEST_F(TrainingTest, MinibatchSGDUpdatesAgentWeights) {
     Eigen::MatrixXf initialW2 = training->agent1->W2;
 
     // Act
+    training->populateMemoryRandom();
     training->minibatchSGD(true); // Train agent1
 
     // Assert

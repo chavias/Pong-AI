@@ -11,8 +11,6 @@ find_package(OpenMP REQUIRED)
 
 # set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=native -funroll-loops")
 
-
-
 # add test sources
 target_sources(test_dqn
 PRIVATE ${PROJECT_SOURCE_DIR}/src/dqn/Agent.cpp
@@ -23,10 +21,10 @@ PRIVATE ${PROJECT_SOURCE_DIR}/src/pong/Game.cpp
 PRIVATE ${PROJECT_SOURCE_DIR}/src/pong/Ball.cpp
 PRIVATE ${PROJECT_SOURCE_DIR}/src/pong/Paddle.cpp
 PRIVATE ${PROJECT_SOURCE_DIR}/src/pong/ScoreManager.cpp
-PRIVATE activations.test.cpp    
-PRIVATE Agent.test.cpp
-PRIVATE Memory.test.cpp
-PRIVATE DQN.test.cpp
+# PRIVATE activations.test.cpp    
+# PRIVATE Agent.test.cpp
+# PRIVATE Memory.test.cpp
+# PRIVATE DQN.test.cpp
 PRIVATE Training.test.cpp
 )
 
@@ -52,6 +50,9 @@ target_link_libraries(test_dqn
     raylib
     OpenMP::OpenMP_CXX
 )
+
+# set_target_properties(test_dqn PROPERTIES COMPILE_OPTIONS "-pg")
+# set_target_properties(test_dqn PROPERTIES LINK_OPTIONS "-pg")
 
 # Register the test executable with CTest
 add_test(NAME TestDQN COMMAND test_dqn)

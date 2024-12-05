@@ -1,14 +1,14 @@
 #include "Training.hpp"
 #include "constants.hpp"
 #include "Random.hpp"
-// #include <omp.h>
+#include <omp.h>
 
 #define LOG(X) std::cout << X << std::endl
 
 /// @brief Populates memory with one game of pong
 void Training::populateMemoryRandom()
 {
-    // #pragma omp parallel for
+    #pragma omp parallel for
     for (int i = 0; i < startLearning; i++)
     {
         int t = 1;
@@ -32,6 +32,7 @@ void Training::train()
 {
     // populate Memory
     populateMemoryRandom();
+    #pragma omp parallel for
     for (int episode = 0; episode < numEpisodes; episode++)
     {
         epsilon = std::max(epsilonMin, epsilon - epsilonDel);

@@ -14,12 +14,12 @@ class Training
 public:
     // Learning parameter
     double learningRate = 6e-4;
-    int updateTarget = 1000; // 10001
-    int startLearning = 5000; // 5000
-    int numEpisodes = 60000; // 64000
+    int updateTarget = 200; // 10001
+    int startLearning = 500; // 5000
+    int numEpisodes = 8000; // 64000
     double discount = 0.95; // Discount in Bellman Equation
     double regularization = 0e-5;
-    int maxRunningTime = 600; // 500
+    int maxRunningTime = 500; // 500
     int miniBatchSize = 64;
 
     // Game parameter

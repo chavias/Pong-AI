@@ -65,4 +65,5 @@ if (TEST_DQN)
     include(CTest)
     enable_testing()      
     add_subdirectory(tests)
+    # Ensure the tests also have profiling and debugging enabled
 endif()
