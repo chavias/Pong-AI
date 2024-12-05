@@ -67,21 +67,7 @@ TEST_F(TrainingTest, GradientCalculatesCorrectValues) {
     ep.gameEnd = false;
 
     // Act
-    auto [dW1, dW2] = training->gradient(ep, true); // Compute for agent1.
-
-    LOG("------dW1-----");
-    LOG(dW1.rows());
-    LOG(dW1.cols());
-    LOG("------dW2----");
-    LOG(dW1.rows());
-    LOG(dW1.cols());
-    LOG("------W1-----");
-    LOG(training->agent1->W1.rows());
-    LOG(training->agent1->W1.cols());
-    LOG("------W2-----");
-    LOG(training->agent1->W2.rows());
-    LOG(training->agent1->W2.cols());
-
+    auto [dW1, dW2] = training->gradient(ep, true); // Compute for agent
 
 
     // Assert
