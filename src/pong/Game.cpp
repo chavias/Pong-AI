@@ -18,7 +18,7 @@ Game::Game(std::unique_ptr<Paddle> &&p1, std::unique_ptr<Paddle> &&p2)
 
 Game::~Game()
 {
-    CloseWindow();
+    
 }
 
 void Game::Run()
@@ -37,6 +37,8 @@ void Game::Run()
         // std::cout << state.gameEnd << '\n';
         Render();
     }
+
+    CloseWindow();
 }
 
 /// @brief Provides State and Rewards for the Agent to learn 

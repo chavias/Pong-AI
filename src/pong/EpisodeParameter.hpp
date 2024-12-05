@@ -14,7 +14,7 @@ struct EpisodeParameter
           gameEnd(false)
     {};
 
-    EpisodeParameter(Eigen::Matrix<float, 6, 1> variables,
+    EpisodeParameter(const Eigen::Matrix<float, 6, 1>& variables,
                     Action act1,
                     Action act2,
                     int rew1,

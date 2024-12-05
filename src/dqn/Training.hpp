@@ -41,14 +41,14 @@ public:
     std::unique_ptr<Game> game = std::make_unique<Game>(); // initialize with ai paddles
 
     // Initialize Agents and Target
-    std::unique_ptr<Agent> agent1 = std::make_unique<Agent>(3, 7, 0, 1);
-    std::unique_ptr<Agent> agent2 = std::make_unique<Agent>(3, 7, 0, 1);
+    std::unique_ptr<Agent> agent1 = std::make_unique<Agent>(21, 7, 3, 22);
+    std::unique_ptr<Agent> agent2 = std::make_unique<Agent>(21, 7, 3, 22);
 
-    std::unique_ptr<Agent> nextTarget1 = std::make_unique<Agent>(3, 7, 0, 1);
-    std::unique_ptr<Agent> nextTarget2 = std::make_unique<Agent>(3, 7, 0, 1);
+    std::unique_ptr<Agent> nextTarget1 = std::make_unique<Agent>(21, 7, 3, 22);
+    std::unique_ptr<Agent> nextTarget2 = std::make_unique<Agent>(21, 7, 3, 22);
 
-    std::unique_ptr<Agent> target1 = std::make_unique<Agent>(3, 7, 0, 1);
-    std::unique_ptr<Agent> target2 = std::make_unique<Agent>(3, 7, 0, 1);
+    std::unique_ptr<Agent> target1 = std::make_unique<Agent>(21, 7, 3, 22);
+    std::unique_ptr<Agent> target2 = std::make_unique<Agent>(21, 7, 3, 22);
 
     std::unique_ptr<Rand> random = std::make_unique<Rand>();
 
