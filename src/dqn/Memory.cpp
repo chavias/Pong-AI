@@ -2,10 +2,11 @@
 #include <iostream>
 
 Memory::Memory()
-    : highest_index(-1)
+    : highest_index(-1), gen(rd()), dis(0, 0)
 {
     ReplayMemory.reserve(100000);
 }
+
 
 // sample from Memory
 const EpisodeParameter& Memory::sample()

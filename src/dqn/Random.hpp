@@ -8,7 +8,7 @@ struct Rand
 private:
     std::random_device rd; // Seed source
     std::mt19937 gen; // Mersenne Twister generator
-    std::uniform_int_distribution<int> distAction{1, 3}; // For actions (1 to 3)
+    std::uniform_int_distribution<int> distAction{0, 2}; // For actions (0 to 2t)
     std::uniform_real_distribution<double> distEpsilon{0.0, 1.0}; // For epsilon (0.0 to 1.0)
 
 public:

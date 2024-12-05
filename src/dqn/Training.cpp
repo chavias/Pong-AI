@@ -18,8 +18,9 @@ void Training::populateMemoryRandom()
         
         while (!ep.gameEnd && t < maxRunningTime)
         {
-            ep = game->Step(deltaTime,random->randomAction(),
-                                                       random->randomAction());
+            ep = game->Step(deltaTime,
+                            random->randomAction(),
+                            random->randomAction());
             mem->append(ep);
             t++;
         }
@@ -29,7 +30,8 @@ void Training::populateMemoryRandom()
 
 void Training::train()
 {
-    LOG("Entered train");
+    // populate Memory
+    populateMemoryRandom();
     for (int episode = 0; episode < numEpisodes; episode++)
     {
         epsilon = std::max(epsilonMin, epsilon - epsilonDel);
@@ -112,9 +114,31 @@ void Training::train()
             *target1 = *nextTarget1;
             *target2 = *nextTarget2;
         }
+        
+        // LOG("target1->W1.rows = " << target1->W1.rows());
+        // LOG("target1->W1.cols = " << target1->W1.cols());
+        // LOG("target1->W2.rows = " << target1->W2.rows());
+        // LOG("target1->W2.cols = " << target1->W2.cols());
+        // LOG("-----------------------------------------");
+        // LOG("target2->W1.rows = " << target2->W1.rows());
+        // LOG("target2->W1.cols = " << target2->W1.cols());                
+        // LOG("target2->W2.rows = " << target2->W2.rows());
+        // LOG("target2->W2.cols = " << target2->W2.cols());
+        // LOG("-----------------------------------------");
+        // LOG("agent1->W1.rows = " << agent1->W1.rows());
+        // LOG("agent1->W1.cols = " << agent1->W1.cols());                
+        // LOG("agent1->W2.rows = " << agent1->W2.rows());
+        // LOG("agent1->W2.cols = " << agent1->W2.cols());
+        // LOG("-----------------------------------------");
+        // LOG("agent2->W1.rows = " << agent2->W1.rows());
+        // LOG("agent2->W1.cols = " << agent2->W1.cols());                
+        // LOG("agent2->W2.rows = " << agent2->W2.rows());
+        // LOG("agent2->W2.cols = " << agent2->W2.cols());
 
         // train the looser Agent only
+        // LOG("looser = " << looser);
         minibatchSGD(looser);
+        // LOG("got memory");
     }
 }
 
@@ -127,12 +151,20 @@ void Training::minibatchSGD(bool isAgent)
     // Initialize gradients
     Eigen::MatrixXf dW1 = Eigen::MatrixXf::Zero(agent->W1.rows(), agent->W1.cols());
     Eigen::MatrixXf dW2 = Eigen::MatrixXf::Zero(agent->W2.rows(), agent->W2.cols());
-
+    // LOG("dW1.rows() = " << dW1.rows());
+    // LOG("dW1.cols() = " << dW1.cols());
+    // LOG("dW2.rows() = " << dW2.rows());
+    // LOG("dW2.cols() = " << dW2.cols());
+    Eigen::MatrixXf dW1temp = Eigen::MatrixXf::Zero(agent->W1.rows(), agent->W1.cols());
+    Eigen::MatrixXf dW2temp = Eigen::MatrixXf::Zero(agent->W2.rows(), agent->W2.cols());
+    // LOG("dW1temp.rows() = " << dW1temp.rows());
     EpisodeParameter randomEpisode;
     // Collect gradients over the minibatch
     for (int i = 0; i < miniBatchSize; ++i) {
         // Sample a random instance from memory
         randomEpisode = mem->sample();
+
+        // LOG(miniBatchSize - i);
 
         // Compute gradients for the sampled instance
         auto [dW1temp, dW2temp] = gradient(randomEpisode, isAgent);
@@ -141,6 +173,7 @@ void Training::minibatchSGD(bool isAgent)
         dW1 += dW1temp;
         dW2 += dW2temp;
     }
+    // LOG("Gradient finish");
     
     // Update the weights of the agent
     agent->W1 = (learningRate / miniBatchSize) * dW1 + (1.0f - regularization) * agent->W1;
@@ -176,12 +209,13 @@ Training::gradient(const EpisodeParameter& ep, bool isAgent)
     // LOG("--------------------------");
     // LOG("Q agent = " << agentOut.v2);
     // LOG("--------------------------");
-
+    // LOG("agentOut.v2.rows() = " << agentOut.v2.rows());
+    // LOG("Action = " << action);
     // ------------------- Backpropagation ------------------------------- //
 
     // Output layer error and delta
     Eigen::Matrix<float, 3, 1> e2 = Eigen::Vector3f::Zero();
-    e2(action) = y - agentOut.v2(action);
+    e2(action) = y - agentOut.v2((int) action);
     Eigen::VectorXf delta2 = e2;
     // LOG("--------------------------");
     // LOG("delta2  = " << e2);

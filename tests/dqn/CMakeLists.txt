@@ -9,6 +9,7 @@ add_executable(test_dqn
 
 find_package(OpenMP REQUIRED)
 
+# set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=native -funroll-loops")
 
 
 

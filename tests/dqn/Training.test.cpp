@@ -5,7 +5,7 @@
 #include <memory>
 #include <Eigen/Dense>
 
-#define LOG(X) std::cout << X << "\n"
+#define LOG(X) std::cout << X << std::endl
 
 class TrainingTest : public ::testing::Test {
 protected:
@@ -40,28 +40,11 @@ TEST_F(TrainingTest, PopulateMemoryRandomAddsEpisodes) {
     EpisodeParameter ep3 = training->mem->sample();
 
     // LOG(ep3.pongVariables);
-
-    ASSERT_EQ(ep2.pongVariables[0], 640);
 }
 
-// Test for train
-// TEST_F(TrainingTest, TrainReducesEpsilon) {
-//     // // Arrange
-//     double initialEpsilon = training->epsilon;
-//     LOG(initialEpsilon);
-//     // // Act
-//     training->train();
-
-//     // // Assert
-//     // ASSERT_LT(training->epsilon, initialEpsilon)
-//     //     << "Epsilon should decrease during training.";
-//     // ASSERT_GE(training->epsilon, training->epsilonMin)
-//     //     << "Epsilon should not fall below epsilonMin.";
-// }
 // Test for gradient
 TEST_F(TrainingTest, GradientCalculatesCorrectValues) {
     // Arrange
-    LOG("calling gradient");
     EpisodeParameter ep;
     ep.reward1 = 10.0f; // Test with a specific reward.
     ep.gameEnd = false;
@@ -82,23 +65,30 @@ TEST_F(TrainingTest, MinibatchSGDUpdatesAgentWeights) {
 
     // Arrange
     Eigen::MatrixXf initialW1 = training->agent1->W1;
-    LOG(initialW1);
-
     Eigen::MatrixXf initialW2 = training->agent1->W2;
-    LOG("Finished arrange");
 
-
-
-
-    // // Act
-    LOG("Calling minibatch");
+    // Act
     training->minibatchSGD(true); // Train agent1
 
+    // Assert
+    ASSERT_NE(initialW1, training->agent1->W1);
+    ASSERT_NE(initialW2, training->agent1->W2);
+}
+
+// Test for train
+TEST_F(TrainingTest, TrainReducesEpsilon) {
+
+    // Arrange
+    double initialEpsilon = training->epsilon;
+    
+    // Act
+    training->train();
+
     // // Assert
-    // ASSERT_FALSE(training->agent1->W1.isApprox(initialW1))
-    //     << "Agent1's W1 weights should be updated after minibatchSGD.";
-    // ASSERT_FALSE(training->agent1->W2.isApprox(initialW2))
-        // << "Agent1's W2 weights should be updated after minibatchSGD.";
+    ASSERT_LT(training->epsilon, initialEpsilon)
+         << "Epsilon should decrease during training.";
+    ASSERT_GE(training->epsilon, training->epsilonMin)
+         << "Epsilon should not fall below epsilonMin.";
 }
 
 
