@@ -16,10 +16,7 @@ Game::Game(std::unique_ptr<Paddle> &&p1, std::unique_ptr<Paddle> &&p2)
     }
 }
 
-Game::~Game()
-{
-    
-}
+Game::~Game() {}
 
 void Game::Run()
 {

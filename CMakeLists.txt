@@ -6,6 +6,8 @@ project(pong_dqn VERSION 1.0)
 
 option(TEST_DQN "Test DQN" ON)
 
+find_package(OpenMP REQUIRED)
+
 # add_executable(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/src/pong/main.cpp)
 set(SOURCE_FILES 
     src/pong/Ball.cpp 
@@ -39,7 +41,7 @@ endif()
 
 
 
-find_package(OpenMP REQUIRED)
+
 
 # target_link_libraries(solver PRIVATE OpenMP::OpenMP_CXX)
 

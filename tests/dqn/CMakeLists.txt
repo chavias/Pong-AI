@@ -21,10 +21,10 @@ PRIVATE ${PROJECT_SOURCE_DIR}/src/pong/Game.cpp
 PRIVATE ${PROJECT_SOURCE_DIR}/src/pong/Ball.cpp
 PRIVATE ${PROJECT_SOURCE_DIR}/src/pong/Paddle.cpp
 PRIVATE ${PROJECT_SOURCE_DIR}/src/pong/ScoreManager.cpp
-# PRIVATE activations.test.cpp    
-# PRIVATE Agent.test.cpp
-# PRIVATE Memory.test.cpp
-# PRIVATE DQN.test.cpp
+PRIVATE activations.test.cpp    
+PRIVATE Agent.test.cpp
+PRIVATE Memory.test.cpp
+PRIVATE DQN.test.cpp
 PRIVATE Training.test.cpp
 )
 

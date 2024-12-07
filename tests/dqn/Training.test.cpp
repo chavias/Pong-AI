@@ -80,18 +80,17 @@ TEST_F(TrainingTest, MinibatchSGDUpdatesAgentWeights) {
 TEST_F(TrainingTest, TrainReducesEpsilon) {
 
     // Arrange
-    double initialEpsilon = training->epsilon;
+    double initialEpsilon = training->epsilonParams.epsilon;
     
     // Act
     training->train();
 
     // // Assert
-    ASSERT_LT(training->epsilon, initialEpsilon)
+    ASSERT_LT(training->epsilonParams.epsilon, initialEpsilon)
          << "Epsilon should decrease during training.";
-    ASSERT_GE(training->epsilon, training->epsilonMin)
+    ASSERT_GE(training->epsilonParams.epsilon, training->epsilonParams.epsilonMin)
          << "Epsilon should not fall below epsilonMin.";
 }
-
 
 // Test for test
 // TEST_F(TrainingTest, TestExecutesWithoutErrors) {
@@ -99,10 +98,6 @@ TEST_F(TrainingTest, TrainReducesEpsilon) {
 //     ASSERT_NO_THROW(training->test())
 //         << "Test method should execute without throwing exceptions.";
 // }
-
-
-
-
 
 // TEST_F(TrainingTest, PopulateMemoryRandom)
 // {

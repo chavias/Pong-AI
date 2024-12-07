@@ -7,7 +7,8 @@
                 "/usr/include",
                 "/usr/include/c++/12",
                 "/usr/include/x86_64-linux-gnu/c++/12",
-                "/usr/include/vtk-9.1"
+                "/usr/include/vtk-9.1",
+                "/usr/lib/gcc/x86_64-linux-gnu/12/include"
             ],
             "defines": [],
             "cStandard": "c11",

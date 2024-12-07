@@ -1,4 +1,7 @@
-# build folder
+# Perf files
+**/perf*
+
+# Build folder
 [Bb][Uu][Ii][Ll][Dd]/
 
 # Prerequisites

@@ -4,7 +4,8 @@
 #include "Game.hpp"
 #include "DQN.hpp"
 #include "Random.hpp"
-// #include "EpisodeParameter.hpp"
+#include "constants.hpp"
+#include <omp.h>
 #include <random>
 #include <algorithm>
 #include <memory>   
@@ -12,27 +13,41 @@
 class Training
 {
 public:
-    // Learning parameter
-    double learningRate = 6e-4;
-    int updateTarget = 200; // 10001
-    int startLearning = 500; // 5000
-    int numEpisodes = 8000; // 64000
-    double discount = 0.95; // Discount in Bellman Equation
-    double regularization = 0e-5;
-    int maxRunningTime = 500; // 500
-    int miniBatchSize = 64;
+    // Learning parameters
+    struct LearningParams {
+        double learningRate;
+        int updateTarget;
+        int startLearning;
+        int numEpisodes;
+        double discount;
+        double regularization;
+        int maxRunningTime;
+        int miniBatchSize;
+    };
 
-    // Game parameter
-    float deltaTime = 1;
+    // Epsilon-greedy parameters
+    struct EpsilonParams {
+        double epsilon;
+        double epsilonDel;
+        double epsilonMin;
+    };
 
-    // epsilon greedy parameter
-    double epsilon = 1;
-    double epsilonDel = 1e-4;
-    double epsilonMin = 0.05;
+    // Reward tracking
+    struct RewardParams {
+        int maxReward1;
+        int maxReward2;
+    };
 
-    // Record rewards
-    int maxReward1 = 0;
-    int maxReward2 = 0;
+    LearningParams learningParams;
+    EpsilonParams epsilonParams;
+    RewardParams rewardParams;
+    float deltaTime;
+    
+    Training();
+
+    Training(size_t hidden);
+
+    Training(const LearningParams &learningParams, const EpsilonParams &epsilonParams, float deltaTime);
 
     // setup Memory
     std::unique_ptr<Memory> mem = std::make_unique<Memory>();

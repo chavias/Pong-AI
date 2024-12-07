@@ -53,8 +53,7 @@ TEST_F(MemoryTest, GetHighestIndex) {
     fillMemory();  // Add data to memory
     // Expect the sample to return an EpisodeParameter with the correct data
     int index = memory->highest_index;
-    std::cout << index << std::endl;
-    // EXPECT_EQ(index, 4);
+    EXPECT_EQ(index, 4);
 }
 
 // Test for appending data to the memory
