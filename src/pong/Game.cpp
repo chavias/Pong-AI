@@ -22,16 +22,18 @@ void Game::Run()
 {
     // Should maybe moved to the constructor
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Pong");
-    SetTargetFPS(60);
-
+    SetTargetFPS(80);
+    int numbers = 0;
     while (!WindowShouldClose())
     {
-        float deltaTime = GetFrameTime();
+        float deltaTime = 5; //GetFrameTime();
         // Update(deltaTime);
         Action action1 = WAIT;
         Action action2 = WAIT;
         EpisodeParameter state = Step(deltaTime, action1, action2);
-        // std::cout << state.gameEnd << '\n';
+        if (state.gameEnd)
+            std::cout << numbers << '\n';
+        numbers++;
         Render();
     }
 
@@ -68,14 +70,14 @@ EpisodeParameter Game::Step(float deltaTime, Action action1, Action action2)
     // count score and reset
     if (ball->x - ball->radius <= 0)
     {
-        scoreManager->LeftScored();
+        scoreManager->RightScored();
         reward1 = -1; // decrease reward 
         gameEnd = true;
         Reset();
     }
     else if (ball->x + ball->radius >= SCREEN_WIDTH)
     {
-        scoreManager->RightScored();
+        scoreManager->LeftScored();
         reward2 = -1; // decrease reward 
         gameEnd = true;
         Reset();

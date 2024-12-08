@@ -29,10 +29,10 @@
 
 
 Training::Training()
-    : learningParams{6e-1, 10001, 5000, 64000, 0.95, 1e-5, 10000, 64},
+    : learningParams{6e-1, 10001, 5000, 64000, 0.95, 0e-5, 1000000, 64},
       epsilonParams{1, 1e-4, 0.05},
       rewardParams{0, 0},
-      deltaTime(0.01f),
+      deltaTime(5.0f),
       mem(std::make_unique<Memory>()),
       game(std::make_unique<Game>(std::make_unique<AIPaddle>(PADDLE1_X, PADDLE_Y),
                                   std::make_unique<AIPaddle>(PADDLE2_X, PADDLE_Y))),
@@ -113,7 +113,7 @@ void Training::train()
     populateMemoryRandom();
 
     omp_set_num_threads(8);  // Set to 4 threads
-
+    LOG("delta time = " << deltaTime);
     int totalReward1 = 0;
     int totalReward2 = 0;
 
@@ -131,7 +131,7 @@ void Training::train()
 
         bool looser; // determines which agent to train
         int t = 1;
-        while (!ep.gameEnd && t < learningParams.maxRunningTime)
+        while (!(ep.gameEnd) && t < learningParams.maxRunningTime)
         {
             // Agent 1
             // with probability epsilon choose random action
@@ -159,27 +159,28 @@ void Training::train()
             }
 
             // Step game
-            EpisodeParameter nextEpisode = game->Step(deltaTime, ep.action1, ep.action2);
-            mem->append(nextEpisode);
+            ep = game->Step(deltaTime, ep.action1, ep.action2);
+            mem->append(ep);
 
             // Update total Reward
-            totalReward1 += nextEpisode.reward1;
-            totalReward2 += nextEpisode.reward2;
+            totalReward1 += ep.reward1;
+            totalReward2 += ep.reward2;
 
             // The looser of this round is trained next round
-            if (nextEpisode.gameEnd)
+            if (ep.gameEnd)
             {
-                looser = (nextEpisode.reward1 < nextEpisode.reward2) ? true : false;
+                looser = (ep.reward1 < ep.reward2) ? true : false;
             }
 
             t++;
+            if (t == learningParams.maxRunningTime)
+                LOG("Maxruntime =" << t);
         }
-#pragma critical
-{
+// #pragma critical
+// {
         // Record max reward and save weights for targets update
         if (totalReward1 >= rewardParams.maxReward1)
         {
-            // std::cout << totalReward1 << std::endl;
             rewardParams.maxReward1 = totalReward1;
             // nextTarget1 = std::make_unique<Agent>(*agent1);
             *nextTarget1 = *agent1;
@@ -187,7 +188,6 @@ void Training::train()
 
         if (totalReward2 >= rewardParams.maxReward2)
         {
-            // std::cout << totalReward1 << std::endl;
             rewardParams.maxReward2 = totalReward2;
             // nextTarget2 = std::make_unique<Agent>(*agent2);
             *nextTarget2 = *agent2;
@@ -201,31 +201,8 @@ void Training::train()
             *target1 = *nextTarget1;
             *target2 = *nextTarget2;
         }
-}
-        // LOG("target1->W1.rows = " << target1->W1.rows());
-        // LOG("target1->W1.cols = " << target1->W1.cols());
-        // LOG("target1->W2.rows = " << target1->W2.rows());
-        // LOG("target1->W2.cols = " << target1->W2.cols());
-        // LOG("-----------------------------------------");
-        // LOG("target2->W1.rows = " << target2->W1.rows());
-        // LOG("target2->W1.cols = " << target2->W1.cols());
-        // LOG("target2->W2.rows = " << target2->W2.rows());
-        // LOG("target2->W2.cols = " << target2->W2.cols());
-        // LOG("-----------------------------------------");
-        // LOG("agent1->W1.rows = " << agent1->W1.rows());
-        // LOG("agent1->W1.cols = " << agent1->W1.cols());
-        // LOG("agent1->W2.rows = " << agent1->W2.rows());
-        // LOG("agent1->W2.cols = " << agent1->W2.cols());
-        // LOG("-----------------------------------------");
-        // LOG("agent2->W1.rows = " << agent2->W1.rows());
-        // LOG("agent2->W1.cols = " << agent2->W1.cols());
-        // LOG("agent2->W2.rows = " << agent2->W2.rows());
-        // LOG("agent2->W2.cols = " << agent2->W2.cols());
-
-        // train the looser Agent only
-        // LOG("looser = " << looser);
+// }
         minibatchSGD(looser);
-        // LOG("got memory");
 
     }
 }
@@ -366,19 +343,17 @@ void Training::playGame()
     
     game->scoreManager->ResetScore();
     
-
-    float deltaTime = 0.01;
     while (!WindowShouldClose())
     {
 
         EpisodeParameter state = game->Step(deltaTime, action1, action2);
         // get action 1
-        out = DQN(agent1, state.pongVariables);
+        out = DQN(nextTarget1, state.pongVariables);
         max_value1 = out.maxCoeff(&idx1);
         action1 = static_cast<Action>(idx1);
 
         // get action 2
-        out = DQN(agent2, state.pongVariables);
+        out = DQN(nextTarget2, state.pongVariables);
         max_value2 = out.maxCoeff(&idx2);
         action2 = static_cast<Action>(idx2);
     

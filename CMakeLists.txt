@@ -32,36 +32,22 @@ endif()
 # Add external libraries
 add_subdirectory(external/raylib)
 
-# Add pong library
-add_library(pong STATIC
+
+
+# Add the main executable
+set(SOURCE_FILES
     src/pong/Ball.cpp
     src/pong/Paddle.cpp
     src/pong/Game.cpp
     src/pong/ScoreManager.cpp
-)
-target_include_directories(pong PUBLIC 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/pong
-    ${PROJECT_SOURCE_DIR}/external/raylib/src/
-    ${PROJECT_SOURCE_DIR}/external/eigen/
-)
-
-# Add dqn library
-add_library(dqn STATIC
     src/dqn/Agent.cpp
     src/dqn/DQN.cpp
     src/dqn/Memory.cpp
     src/dqn/Training.cpp
-)
-target_include_directories(dqn PUBLIC 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/dqn
-    ${PROJECT_SOURCE_DIR}/external/raylib/src/
-    ${PROJECT_SOURCE_DIR}/external/eigen/
-)
-
-# Add the main executable
-add_executable(${PROJECT_NAME}
     src/main.cpp
 )
+
+add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
 if (OPENMP_FOUND)
     target_compile_options(${PROJECT_NAME} PRIVATE ${OpenMP_CXX_FLAGS})
@@ -70,13 +56,13 @@ endif()
 
 
 include_directories(${PROJECT_NAME} PUBLIC 
+    ${PROJECT_SOURCE_DIR}/src/pong
+    ${PROJECT_SOURCE_DIR}/src/dqn
     ${PROJECT_SOURCE_DIR}/external/raylib/src/
     ${PROJECT_SOURCE_DIR}/external/eigen/
 )
 
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE pong
-    PRIVATE dqn
     PRIVATE raylib
     PRIVATE pthread
     PRIVATE OpenMP::OpenMP_CXX

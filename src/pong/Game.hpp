@@ -42,6 +42,7 @@ public:
     void Render() const;
 
     std::unique_ptr<ScoreManager> scoreManager;
+    
 private:
     std::unique_ptr<Ball> ball;
     std::unique_ptr<Paddle> paddle1;
