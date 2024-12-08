@@ -82,8 +82,15 @@ TEST_F(TrainingTest, TrainReducesEpsilon) {
     // Arrange
     double initialEpsilon = training->epsilonParams.epsilon;
     
+    omp_set_num_threads(4);  // Set to 4 threads
+
     // Act
     training->train();
+    training->playGame();
+
+    std::cout << training->rewardParams.maxReward1 << ' ' << training->rewardParams.maxReward2 << std::endl;
+
+
 
     // // Assert
     ASSERT_LT(training->epsilonParams.epsilon, initialEpsilon)

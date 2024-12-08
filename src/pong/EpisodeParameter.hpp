@@ -23,8 +23,8 @@ struct EpisodeParameter
         : pongVariables(std::move(variables)), 
           action1(act1),
           action2(act2),
-          reward1(0),
-          reward2(0),
+          reward1(rew1),
+          reward2(rew2),
           gameEnd(gameEnd)
     {};
 

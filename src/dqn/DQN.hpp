@@ -1,8 +1,8 @@
 #pragma once
 #include "Agent.hpp"
-#include "EpisodeParameter.hpp"
+#include "../pong/EpisodeParameter.hpp"
 #include "activations.hpp"
-#include "constants.hpp"
+#include "../pong/constants.hpp"
 #include <memory>
 #include <utility>
 

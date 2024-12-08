@@ -13,6 +13,8 @@ public:
     void RightScored();
     void DrawScore() const;
 
+    void ResetScore();
+
     int GetLeftScore() const;
     int GetRIghtScore() const;
 };

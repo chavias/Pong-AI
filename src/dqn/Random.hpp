@@ -1,6 +1,6 @@
 #pragma once
 #include <random>
-#include "Action.hpp"
+#include "../pong/Action.hpp"
 #include <iostream>
 
 struct Rand

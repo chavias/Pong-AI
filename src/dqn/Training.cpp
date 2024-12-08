@@ -2,13 +2,40 @@
 
 #define LOG(X) std::cout << X << std::endl
 
+    // // Learning parameters
+    // struct LearningParams {
+    //     double learningRate;
+    //     int updateTarget;
+    //     int startLearning;
+    //     int numEpisodes;
+    //     double discount;
+    //     double regularization;
+    //     int maxRunningTime;
+    //     int miniBatchSize;
+    // };
+
+    // // Epsilon-greedy parameters
+    // struct EpsilonParams {
+    //     double epsilon;
+    //     double epsilonDel;
+    //     double epsilonMin;
+    // };
+
+    // // Reward tracking
+    // struct RewardParams {
+    //     int maxReward1;
+    //     int maxReward2;
+    // };
+
+
 Training::Training()
-    : learningParams{6e-4, 10001, 5000, 64000, 0.95, 1e-5, 500, 64},
+    : learningParams{6e-1, 10001, 5000, 64000, 0.95, 1e-5, 10000, 64},
       epsilonParams{1, 1e-4, 0.05},
       rewardParams{0, 0},
-      deltaTime(1.0f),
+      deltaTime(0.01f),
       mem(std::make_unique<Memory>()),
-      game(std::make_unique<Game>()),
+      game(std::make_unique<Game>(std::make_unique<AIPaddle>(PADDLE1_X, PADDLE_Y),
+                                  std::make_unique<AIPaddle>(PADDLE2_X, PADDLE_Y))),
       agent1(std::make_unique<Agent>(21, 7, 3, 22)),
       agent2(std::make_unique<Agent>(21, 7, 3, 22)),
       nextTarget1(std::make_unique<Agent>(21, 7, 3, 22)),
@@ -18,18 +45,18 @@ Training::Training()
       random(std::make_unique<Rand>()) {}
 
 Training::Training(size_t hidden)
-    : learningParams{6e-4, 10001, 5000, 64000, 0.95, 1e-5, 500, 64},
+    : learningParams{6e-4, 1001, 5000, 64000, 0.95, 1e-5, 500, 64},
       epsilonParams{1, 1e-4, 0.05},
       rewardParams{0, 0},
       deltaTime(1.0f),
       mem(std::make_unique<Memory>()),
       game(std::make_unique<Game>()),
-      agent1(std::make_unique<Agent>(hidden, 7, 3, hidden+1)),
-      agent2(std::make_unique<Agent>(hidden, 7, 3, hidden+1)),
-      nextTarget1(std::make_unique<Agent>(hidden, 7, 3, hidden+1)),
-      nextTarget2(std::make_unique<Agent>(hidden, 7, 3, hidden+1)),
-      target1(std::make_unique<Agent>(hidden, 7, 3, hidden+1)),
-      target2(std::make_unique<Agent>(hidden, 7, 3, hidden+1)),
+      agent1(std::make_unique<Agent>(hidden, 7, 3, hidden + 1)),
+      agent2(std::make_unique<Agent>(hidden, 7, 3, hidden + 1)),
+      nextTarget1(std::make_unique<Agent>(hidden, 7, 3, hidden + 1)),
+      nextTarget2(std::make_unique<Agent>(hidden, 7, 3, hidden + 1)),
+      target1(std::make_unique<Agent>(hidden, 7, 3, hidden + 1)),
+      target2(std::make_unique<Agent>(hidden, 7, 3, hidden + 1)),
       random(std::make_unique<Rand>()) {}
 
 Training::Training(const LearningParams &learningParams, const EpsilonParams &epsilonParams, float deltaTime)
@@ -68,11 +95,29 @@ void Training::populateMemoryRandom()
     }
 };
 
+void Training::set_paddles(std::unique_ptr<Paddle>&& p1, std::unique_ptr<Paddle>&& p2)
+{
+    game->set_paddles(std::move(p1), std::move(p2));
+};
+
+
+void Training::set_player(bool side)
+{
+    game->set_player(side);
+}
+
+
 void Training::train()
 {
     // populate Memory
     populateMemoryRandom();
-#pragma omp parallel for
+
+    omp_set_num_threads(8);  // Set to 4 threads
+
+    int totalReward1 = 0;
+    int totalReward2 = 0;
+
+#pragma omp parallel for 
     for (int episode = 0; episode < learningParams.numEpisodes; episode++)
     {
         epsilonParams.epsilon = std::max(epsilonParams.epsilonMin, epsilonParams.epsilon - epsilonParams.epsilonDel);
@@ -129,10 +174,12 @@ void Training::train()
 
             t++;
         }
-
+#pragma critical
+{
         // Record max reward and save weights for targets update
         if (totalReward1 >= rewardParams.maxReward1)
         {
+            // std::cout << totalReward1 << std::endl;
             rewardParams.maxReward1 = totalReward1;
             // nextTarget1 = std::make_unique<Agent>(*agent1);
             *nextTarget1 = *agent1;
@@ -140,6 +187,7 @@ void Training::train()
 
         if (totalReward2 >= rewardParams.maxReward2)
         {
+            // std::cout << totalReward1 << std::endl;
             rewardParams.maxReward2 = totalReward2;
             // nextTarget2 = std::make_unique<Agent>(*agent2);
             *nextTarget2 = *agent2;
@@ -153,7 +201,7 @@ void Training::train()
             *target1 = *nextTarget1;
             *target2 = *nextTarget2;
         }
-
+}
         // LOG("target1->W1.rows = " << target1->W1.rows());
         // LOG("target1->W1.cols = " << target1->W1.cols());
         // LOG("target1->W2.rows = " << target1->W2.rows());
@@ -178,6 +226,7 @@ void Training::train()
         // LOG("looser = " << looser);
         minibatchSGD(looser);
         // LOG("got memory");
+
     }
 }
 
@@ -296,4 +345,48 @@ Training::gradient(const EpisodeParameter &ep, bool isAgent)
     Eigen::MatrixXf dW2 = delta2 * agentOut.y1.transpose();
 
     return std::make_pair(dW1, dW2);
+}
+
+void Training::playGame()
+{
+    // Should maybe moved to the constructor
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Pong");
+    SetTargetFPS(60);
+
+    Action action1 = WAIT;
+    Action action2 = WAIT;
+
+    Eigen::Index idx1;
+    Eigen::Index idx2;
+
+    float max_value1;
+    float max_value2;
+
+    Eigen::Matrix<float, 3, 1> out;
+    
+    game->scoreManager->ResetScore();
+    
+
+    float deltaTime = 0.01;
+    while (!WindowShouldClose())
+    {
+
+        EpisodeParameter state = game->Step(deltaTime, action1, action2);
+        // get action 1
+        out = DQN(agent1, state.pongVariables);
+        max_value1 = out.maxCoeff(&idx1);
+        action1 = static_cast<Action>(idx1);
+
+        // get action 2
+        out = DQN(agent2, state.pongVariables);
+        max_value2 = out.maxCoeff(&idx2);
+        action2 = static_cast<Action>(idx2);
+    
+
+
+        // std::cout << state.gameEnd << '\n';
+        game->Render();
+    }
+
+    CloseWindow();
 }

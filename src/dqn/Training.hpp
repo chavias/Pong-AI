@@ -1,10 +1,10 @@
 #pragma once
 #include "Memory.hpp"
 #include "Agent.hpp"
-#include "Game.hpp"
+#include "../pong/Game.hpp"
 #include "DQN.hpp"
 #include "Random.hpp"
-#include "constants.hpp"
+#include "../pong/constants.hpp"
 #include <omp.h>
 #include <random>
 #include <algorithm>
@@ -82,4 +82,10 @@ public:
 
     //
     void test();
+
+    void set_paddles(std::unique_ptr<Paddle>&& p1 = {}, std::unique_ptr<Paddle>&& p2 = {});
+
+    void set_player(bool side);
+
+    void playGame();
 };

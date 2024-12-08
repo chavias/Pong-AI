@@ -23,3 +23,10 @@ int ScoreManager::GetLeftScore() const {
 int ScoreManager::GetRIghtScore() const {
     return rightScore;
 }
+
+
+void ScoreManager::ResetScore()
+{
+    leftScore = 0;
+    rightScore = 0;
+}

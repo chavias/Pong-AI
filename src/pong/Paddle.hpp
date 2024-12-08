@@ -45,6 +45,4 @@ class AIPaddle : public Paddle
 public:
     AIPaddle(float startX, float startY);
     void Update(float deltaTime, float ballY, Action action) override;
-
-    void setAction(Action act);
 };

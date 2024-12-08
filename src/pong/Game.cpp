@@ -69,14 +69,14 @@ EpisodeParameter Game::Step(float deltaTime, Action action1, Action action2)
     if (ball->x - ball->radius <= 0)
     {
         scoreManager->LeftScored();
-        reward1 = 1; // decrease reward 
+        reward1 = -1; // decrease reward 
         gameEnd = true;
         Reset();
     }
     else if (ball->x + ball->radius >= SCREEN_WIDTH)
     {
         scoreManager->RightScored();
-        reward2 = 1; // decrease reward 
+        reward2 = -1; // decrease reward 
         gameEnd = true;
         Reset();
     }
