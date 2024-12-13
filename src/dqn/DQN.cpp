@@ -20,7 +20,9 @@ Eigen::Matrix<float, 3, 1> DQN(const std::unique_ptr<Agent>& agent, const Eigen:
 
     // Extend y1 with a constant 1.0 (add bias)
     Eigen::Matrix<float, Eigen::Dynamic, 1> y1_with_bias(y1.rows() + 1, 1);
-    y1_with_bias << y1, 1.0f;
+    // y1_with_bias << y1, 1.0f;
+    y1_with_bias.topRows(y1.rows()) = y1;
+    y1_with_bias(y1.rows()) = 1.0f;
 
     // Layer 2: Weighted sum (output layer)
     Eigen::MatrixXf v2 = agent->W2 * y1_with_bias;
@@ -50,7 +52,10 @@ DQNReturn DQN(const std::unique_ptr<Agent>& agent, const Eigen::Matrix<float, 6,
 
     // Extend y1 with a constant 1.0 (add bias)
     Eigen::Matrix<float, Eigen::Dynamic, 1> y1_with_bias(y1.rows() + 1, 1);
-    y1_with_bias << y1, 1.0f;
+    // y1_with_bias << y1, 1.0f;
+    y1_with_bias.topRows(y1.rows()) = y1;
+    y1_with_bias(y1.rows()) = 1.0f;
+
 
     // Layer 2: Weighted sum (output layer)
     Eigen::MatrixXf v2 = agent->W2 * y1_with_bias;

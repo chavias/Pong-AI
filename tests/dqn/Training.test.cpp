@@ -45,13 +45,18 @@ TEST_F(TrainingTest, PopulateMemoryRandomAddsEpisodes) {
 // Test for gradient
 TEST_F(TrainingTest, GradientCalculatesCorrectValues) {
     // Arrange
-    EpisodeParameter ep;
-    ep.reward1 = 10.0f; // Test with a specific reward.
-    ep.gameEnd = false;
+    training->populateMemoryRandom();
+    EpisodeParameter ep = training->mem->sample();
 
     // Act
     auto [dW1, dW2] = training->gradient(ep, true); // Compute for agent
-
+    LOG("========================================");
+    LOG(dW1);
+    LOG("========================================");
+    LOG(dW2);
+    LOG("========================================");
+    std::cout << "Gradient norms: dW1=" << dW1.norm() << ", dW2=" << dW2.norm() << std::endl;
+    LOG("========================================");
 
     // Assert
     ASSERT_EQ(dW1.rows(), training->agent1->W1.rows());

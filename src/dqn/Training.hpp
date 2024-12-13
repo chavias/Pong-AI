@@ -10,33 +10,36 @@
 #include <algorithm>
 #include <memory>   
 
+
+// Learning parameters
+struct LearningParams {
+    double learningRate;
+    int updateTarget;
+    int startLearning;
+    int numEpisodes;
+    double discount;
+    double regularization;
+    int maxRunningTime;
+    int miniBatchSize;
+};
+
+  // Epsilon-greedy parameters
+struct EpsilonParams {
+    double epsilon;
+    double epsilonDel;
+    double epsilonMin;
+};
+
+  // Reward tracking
+struct RewardParams {
+    int maxReward1;
+    int maxReward2;
+};
+
+
 class Training
 {
 public:
-    // Learning parameters
-    struct LearningParams {
-        double learningRate;
-        int updateTarget;
-        int startLearning;
-        int numEpisodes;
-        double discount;
-        double regularization;
-        int maxRunningTime;
-        int miniBatchSize;
-    };
-
-    // Epsilon-greedy parameters
-    struct EpsilonParams {
-        double epsilon;
-        double epsilonDel;
-        double epsilonMin;
-    };
-
-    // Reward tracking
-    struct RewardParams {
-        int maxReward1;
-        int maxReward2;
-    };
 
     LearningParams learningParams;
     EpsilonParams epsilonParams;
@@ -49,23 +52,25 @@ public:
 
     Training(const LearningParams &learningParams, const EpsilonParams &epsilonParams, float deltaTime);
 
+    Training(const LearningParams &learningParams, const EpsilonParams &epsilonParams, float deltaTime, size_t hidden);
+
     // setup Memory
-    std::unique_ptr<Memory> mem = std::make_unique<Memory>();
+    std::unique_ptr<Memory> mem;
 
     // initialize Game
-    std::unique_ptr<Game> game = std::make_unique<Game>(); // initialize with ai paddles
+    std::unique_ptr<Game> game;
 
     // Initialize Agents and Target
-    std::unique_ptr<Agent> agent1 = std::make_unique<Agent>(21, 7, 3, 22);
-    std::unique_ptr<Agent> agent2 = std::make_unique<Agent>(21, 7, 3, 22);
+    std::unique_ptr<Agent> agent1;
+    std::unique_ptr<Agent> agent2;
 
-    std::unique_ptr<Agent> nextTarget1 = std::make_unique<Agent>(21, 7, 3, 22);
-    std::unique_ptr<Agent> nextTarget2 = std::make_unique<Agent>(21, 7, 3, 22);
+    std::unique_ptr<Agent> nextTarget1;
+    std::unique_ptr<Agent> nextTarget2;
 
-    std::unique_ptr<Agent> target1 = std::make_unique<Agent>(21, 7, 3, 22);
-    std::unique_ptr<Agent> target2 = std::make_unique<Agent>(21, 7, 3, 22);
+    std::unique_ptr<Agent> target1;
+    std::unique_ptr<Agent> target2;
 
-    std::unique_ptr<Rand> random = std::make_unique<Rand>();
+    std::unique_ptr<Rand> random;
 
     // Populate the Memory randomly
     void populateMemoryRandom();
@@ -80,12 +85,10 @@ public:
     std::pair<Eigen::MatrixXf, Eigen::MatrixXf>
     gradient(const EpisodeParameter &ep, bool isAgent);
 
-    //
-    void test();
 
-    void set_paddles(std::unique_ptr<Paddle>&& p1 = {}, std::unique_ptr<Paddle>&& p2 = {});
-
+    // set a human player
     void set_player(bool side);
 
+    // play a game with the current agents
     void playGame();
 };

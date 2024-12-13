@@ -29,7 +29,7 @@ struct EpisodeParameter
     {};
 
     Eigen::Matrix<float, 6, 1> pongVariables;
-    //  ball_x, ball_y, ball_vx, ball_vy, paddle1 paddle2;
+    //  ball_x, ball_y, ball_vx, ball_vy, paddle1, paddle2;
     
     // y coordinate of the center of the padddle
     Action action1 = WAIT;

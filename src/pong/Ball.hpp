@@ -10,6 +10,7 @@ public:
     Ball();
     void StartMoving();
     void Reset();
+    void Reflect();
     void Update(float deltaTime);
     void Draw() const;
 };

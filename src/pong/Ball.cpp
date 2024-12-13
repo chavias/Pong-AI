@@ -1,13 +1,31 @@
 #include "Ball.hpp"
 #include "constants.hpp"
+#include <cmath>
 
 Ball::Ball() : x(SCREEN_WIDTH / 2), y(SCREEN_HEIGHT / 2), radius(BALL_RADIUS), speed_x(BALL_SPEED), speed_y(BALL_SPEED) {}
+
+void Ball::Reflect()
+{
+    speed_x = -speed_x;
+}
 
 void Ball::Reset() {
     x = SCREEN_WIDTH / 2;
     y = SCREEN_HEIGHT / 2;
-    speed_x = (GetRandomValue(0, 1) == 0 ? -BALL_SPEED : BALL_SPEED);
-    speed_y = (GetRandomValue(0, 1) == 0 ? -BALL_SPEED : BALL_SPEED);
+    // speed_x = (GetRandomValue(0, 1) == 0 ? -BALL_SPEED : BALL_SPEED);
+    // speed_y = (GetRandomValue(0, 1) == 0 ? -BALL_SPEED : BALL_SPEED);
+
+    // Generate a random angle between -75 and 75 degrees or between 105 and 255 degrees 
+    // to ensure the ball does not move straight up or down.
+    float randomAngle = GetRandomValue(-65, 65) * (PI / 180.0f); // Convert to radians
+    if (GetRandomValue(0, 1) == 0) {
+        randomAngle = PI - randomAngle; // Reflect the angle to the left half of the circle
+    }
+
+    // Calculate speed components based on the random angle
+    speed_x = BALL_SPEED * cos(randomAngle);
+    speed_y = BALL_SPEED * sin(randomAngle);
+
 }
 
 void Ball::Update(float deltaTime) {

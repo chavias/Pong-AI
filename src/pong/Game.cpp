@@ -2,16 +2,18 @@
 #include "constants.hpp"
 #include <iostream>
 
-Game::Game(std::unique_ptr<Paddle> &&p1, std::unique_ptr<Paddle> &&p2) 
+Game::Game(std::unique_ptr<Paddle> &&p1, std::unique_ptr<Paddle> &&p2)
     : paddle1(std::move(p1)),
       paddle2(std::move(p2)),
       ball(std::make_unique<Ball>()),
       scoreManager(std::make_unique<ScoreManager>())
 {
-    if (!paddle1) {
+    if (!paddle1)
+    {
         paddle1 = std::make_unique<CpuPaddle>(PADDLE1_X, PADDLE_Y);
     }
-    if (!paddle2) {
+    if (!paddle2)
+    {
         paddle2 = std::make_unique<PlayerPaddle>(PADDLE2_X, PADDLE_Y);
     }
 }
@@ -26,7 +28,7 @@ void Game::Run()
     int numbers = 0;
     while (!WindowShouldClose())
     {
-        float deltaTime = 5; //GetFrameTime();
+        float deltaTime = 5; // GetFrameTime();
         // Update(deltaTime);
         Action action1 = WAIT;
         Action action2 = WAIT;
@@ -40,9 +42,9 @@ void Game::Run()
     CloseWindow();
 }
 
-/// @brief Provides State and Rewards for the Agent to learn 
+/// @brief Provides State and Rewards for the Agent to learn
 /// @param deltaTime, action1, action2,
-/// @return EpisodeParameter structure represents current reward and game state 
+/// @return EpisodeParameter structure represents current reward and game state
 EpisodeParameter Game::Step(float deltaTime, Action action1, Action action2)
 {
     bool gameEnd = false;
@@ -71,14 +73,14 @@ EpisodeParameter Game::Step(float deltaTime, Action action1, Action action2)
     if (ball->x - ball->radius <= 0)
     {
         scoreManager->RightScored();
-        reward1 = -1; // decrease reward 
+        reward1 = -1; // decrease reward
         gameEnd = true;
         Reset();
     }
     else if (ball->x + ball->radius >= SCREEN_WIDTH)
     {
         scoreManager->LeftScored();
-        reward2 = -1; // decrease reward 
+        reward2 = -1; // decrease reward
         gameEnd = true;
         Reset();
     }
@@ -86,7 +88,6 @@ EpisodeParameter Game::Step(float deltaTime, Action action1, Action action2)
     Eigen::Matrix<float, 6, 1> pongVariables(ball->x, ball->y, ball->speed_x, ball->speed_y, paddle1->y, paddle2->y);
     return {pongVariables, action1, action2, reward1, reward2, gameEnd};
 }
-
 
 void Game::Render() const
 {
@@ -108,10 +109,10 @@ void Game::Render() const
 EpisodeParameter Game::Reset()
 {
     ball->Reset();
+    // ball->Reflect();
     paddle1->Reset();
     paddle2->Reset();
     Eigen::Matrix<float, 6, 1> pongVariables(ball->x, ball->y, ball->speed_x, ball->speed_y, paddle1->y, paddle2->y);
     EpisodeParameter ep(pongVariables, WAIT, WAIT, 0, 0, false);
     return ep;
-
 }
