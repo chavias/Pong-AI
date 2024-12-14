@@ -23,8 +23,8 @@ Eigen::MatrixXf Agent::generateRandomMatrix(size_t rows, size_t cols, float minV
 // Constructor to initialize matrices
 Agent::Agent(size_t L1, size_t numColumnsW1, size_t numRowsW2, size_t numColumnsW2)
 {
-        W1 = generateRandomMatrix(L1, numColumnsW1, 0.0, 0.01); // 2
-        W2 = generateRandomMatrix(numRowsW2, numColumnsW2, 0.0, 0.01); // 2
+        W1 = generateRandomMatrix(L1, numColumnsW1, 0.0, 2); // 2
+        W2 = generateRandomMatrix(numRowsW2, numColumnsW2, 0.0, 2); // 2
 }
 
 // Copy Constructor

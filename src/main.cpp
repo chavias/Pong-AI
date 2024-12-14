@@ -3,14 +3,14 @@
 
 void setLearningParameter(LearningParams& learning)
 {
-    learning.learningRate = 0.5e-1;
-    learning.updateTarget = 1e5;//1e5;
-    learning.startLearning = 1e5;
-    learning.numEpisodes = 1e6;
+    learning.learningRate = 0.5;
+    learning.updateTarget = 1e1;//1e5;
+    learning.startLearning = 1e1;
+    learning.numEpisodes = 200;
     learning.discount = 0.95;
     learning.regularization = 0e-5;
     learning.maxRunningTime = 5e5;
-    learning.miniBatchSize = 64;
+    learning.miniBatchSize = 3;
 }
 
 void setRewardParams(RewardParams& reward)

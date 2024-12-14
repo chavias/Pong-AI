@@ -81,7 +81,7 @@ EpisodeParameter Game::Step(float deltaTime, Action action1, Action action2)
     if (ball->x - ball->radius <= 0)
     {
         scoreManager->RightScored();
-        // reward1 = -1; // decrease reward
+        reward1 = -1; // decrease reward
         // std::cout << "-1 left" << std::endl;
         // ball->speed_x *= -1;
         gameEnd = true;
@@ -90,7 +90,7 @@ EpisodeParameter Game::Step(float deltaTime, Action action1, Action action2)
     else if (ball->x + ball->radius >= SCREEN_WIDTH)
     {
         scoreManager->LeftScored();
-        // reward2 = -1; // decrease reward
+        reward2 = -1; // decrease reward
         // ball->speed_x *= -1;
         // std::cout << "-1 right" << std::endl;
         gameEnd = true;
