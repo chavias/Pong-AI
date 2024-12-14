@@ -3,10 +3,10 @@
 
 void setLearningParameter(LearningParams& learning)
 {
-    learning.learningRate = 2e-1;
-    learning.updateTarget = 1e4;//1e5;
+    learning.learningRate = 0.5e-1;
+    learning.updateTarget = 1e5;//1e5;
     learning.startLearning = 1e5;
-    learning.numEpisodes = 1e5;// 5e6;
+    learning.numEpisodes = 1e6;
     learning.discount = 0.95;
     learning.regularization = 0e-5;
     learning.maxRunningTime = 5e5;
@@ -22,21 +22,10 @@ void setRewardParams(RewardParams& reward)
 void setEpsilonParameter(EpsilonParams& epParameter)
 {
     epParameter.epsilon = 1;
-    epParameter.epsilonDel = 1e-6;
+    epParameter.epsilonDel = 1e-6; //1e-6
     epParameter.epsilonMin = 0.05;
 }
 
-// void StartGame()
-// {
-//     std::unique_ptr<Game> game;
-
-//     Game* game = new Game;
-
-//     // game.set_paddles(std::make_unique<PlayerPaddle>(PADDLE1_X, PADDLE_Y),
-//     //                  std::make_unique<PlayerPaddle>(PADDLE2_X, PADDLE_Y));
-
-//     game->Run();
-// }
 
 
 int main()
@@ -44,41 +33,35 @@ int main()
     /**
      *  Choose parameter
      */
-    
     LearningParams learning;
     setLearningParameter(learning);
     
     EpsilonParams eps;
     setEpsilonParameter(eps);
 
-    float deltaTime = 5.0f;
+    float deltaTime = 0.1f;
 
     int number_hidden = 21;
-    /**
-     * Construct the game
-     */
+
+    // Load the agent later
+    std::string filenameLeft = "/home/mach/Projects/Pong_AI/models/agent_left.dat";
+    std::string filenameRight = "/home/mach/Projects/Pong_AI/models/agent_right.dat";
+
 
     std::unique_ptr<Training> training = std::make_unique<Training>(learning, eps, deltaTime, number_hidden);
 
-    /**
-     * Start training
-     */
+    // Load the agents before the training
+    // training->loadAgents(filenameLeft, filenameRight);
+
 
     training->train();
-
-    // std::string path;
-    // train->save(path);
-
-    // train->load(path);
     
-    /**
-     * Play the game
-     */
+    // // Save the agent after training
+    training->saveAgents(filenameLeft, filenameRight);
+
     training->playGame();
 
-    std::cout << "Max reward of the left agent " << training->rewardParams.maxReward1 << "\n";
-    std::cout << "Max reward of the right agent " << training->rewardParams.maxReward2 << "\n";
-
+    // Human player on the left
     training->set_player(0);
 
     training->playGame();

@@ -7,6 +7,7 @@
 #include "EpisodeParameter.hpp"
 #include "raylib.h"
 #include <array>
+#include <iostream>
 #include <memory>
 
 
@@ -32,10 +33,12 @@ public:
         if (side)
         {
             paddle1 = std::make_unique<PlayerPaddle>(PADDLE1_X, PADDLE_Y);
+            // std::cout << " player is left" << std::endl;
         }
         else 
         {
             paddle2 = std::make_unique<PlayerPaddle>(PADDLE2_X, PADDLE_Y);
+            // std::cout << " player is right" << std::endl;
         }
     };
     

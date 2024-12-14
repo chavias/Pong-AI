@@ -1,7 +1,16 @@
 #include "Training.hpp"
 
-#define LOG(X) std::cout << X << std::endl
+// #define DEBUG
 
+#ifdef DEBUG
+    #define DEBUG(X) X
+    #define LOG(X) std::cout << X << std::endl
+#endif
+
+#ifndef DEBUG
+    #define DEBUG(X)
+    #define LOG(X)
+#endif
 
 Training::Training()
     : learningParams{0.4e-1, 10001, 5000, 600000, 0.95, 0.1e-5, 50000, 128},
@@ -38,7 +47,7 @@ Training::Training(size_t hidden)
 Training::Training(const LearningParams &learningParams, const EpsilonParams &epsilonParams, float deltaTime)
     : learningParams(learningParams),
       epsilonParams(epsilonParams),
-      rewardParams{-2, -2},
+      rewardParams{-200, -200},
       deltaTime(deltaTime),
       mem(std::make_unique<Memory>()),
       game(std::make_unique<Game>(std::make_unique<AIPaddle>(PADDLE1_X, PADDLE_Y),
@@ -54,7 +63,7 @@ Training::Training(const LearningParams &learningParams, const EpsilonParams &ep
 Training::Training(const LearningParams &learningParams, const EpsilonParams &epsilonParams, float deltaTime, size_t hidden)
     : learningParams(learningParams),
       epsilonParams(epsilonParams),
-      rewardParams{-2, -2},
+      rewardParams{-200, -200},
       deltaTime(deltaTime),
       mem(std::make_unique<Memory>()),
       game(std::make_unique<Game>(std::make_unique<AIPaddle>(PADDLE1_X, PADDLE_Y),
@@ -66,6 +75,122 @@ Training::Training(const LearningParams &learningParams, const EpsilonParams &ep
       target1(std::make_unique<Agent>(hidden, 7, 3, hidden + 1)),
       target2(std::make_unique<Agent>(hidden, 7, 3, hidden + 1)),
       random(std::make_unique<Rand>()) {}
+
+
+void Training::setAgent1(const std::string& filename) {
+    // Load agent from file
+    try {
+        // Create a new Agent and load its state from the file
+        agent1 = std::make_unique<Agent>(0, 0, 0, 0); // Initialize with placeholder dimensions
+        agent1->loadFromFile(filename);
+
+        // Create target agents for agent1
+        nextTarget1 = std::make_unique<Agent>(*agent1); // Copy weights from loaded agent
+        target1 = std::make_unique<Agent>(*agent1);     // Copy weights from loaded agent
+
+        std::cout << "[+] Agent1 and its targets successfully loaded and set up from: " << filename << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "[-] Error loading agent1 from file: " << e.what() << std::endl;
+    }
+}
+
+
+void Training::setAgent2(const std::string& filename) {
+    // Load agent from file
+    try {
+        // Create a new Agent and load its state from the file
+        agent2 = std::make_unique<Agent>(0, 0, 0, 0); // Initialize with placeholder dimensions
+        agent2->loadFromFile(filename);
+
+        // Create target agents for agent1
+        nextTarget2 = std::make_unique<Agent>(*agent2); // Copy weights from loaded agent
+        target2 = std::make_unique<Agent>(*agent2);     // Copy weights from loaded agent
+
+        std::cout << "[+] Agent2 and its targets successfully loaded and set up from: " << filename << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "[-] Error loading agent2 from file: " << e.what() << std::endl;
+    }
+}    
+
+void Training::saveAgents(const std::string& agent1Filename, const std::string& agent2Filename) {
+    try {
+        if (agent1) {
+            agent1->saveToFile(agent1Filename);
+            std::cout << "[+] Agent1 successfully saved to: " << agent1Filename << std::endl;
+        } else {
+            std::cerr << "[=] Agent1 is not initialized, cannot save!" << std::endl;
+        }
+
+        if (agent2) {
+            agent2->saveToFile(agent2Filename);
+            std::cout << "[+] Agent2 successfully saved to: " << agent2Filename << std::endl;
+        } else {
+            std::cerr << "[=] Agent2 is not initialized, cannot save!" << std::endl;
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "[-] Error saving agents: " << e.what() << std::endl;
+    }
+}
+
+void Training::saveAgent1(const std::string& filename) {
+    // Save agent1 to a file
+    try {
+        if (agent1) {
+            agent1->saveToFile(filename);
+            std::cout << "[+] Agent1 successfully saved to: " << filename << std::endl;
+        } else {
+            std::cerr << "[=] Agent1 is not initialized, cannot save!" << std::endl;
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "[-] Error saving agent1 to file: " << e.what() << std::endl;
+    }
+}
+
+void Training::saveAgent2(const std::string& filename) {
+    // Save agent2 to a file
+    try {
+        if (agent2) {
+            agent2->saveToFile(filename);
+            std::cout << "[+] Agent2 successfully saved to: " << filename << std::endl;
+        } else {
+            std::cerr << "[=] Agent2 is not initialized, cannot save!" << std::endl;
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "[-] Error saving agent2 to file: " << e.what() << std::endl;
+    }
+}
+
+void Training::loadAgents(const std::string& filename1, const std::string& filename2) {
+    // Load agent1
+    try {
+        agent1 = std::make_unique<Agent>(0, 0, 0, 0); // Initialize with placeholder dimensions
+        agent1->loadFromFile(filename1);
+
+        // Create target agents for agent1
+        nextTarget1 = std::make_unique<Agent>(*agent1); // Copy weights from loaded agent
+        target1 = std::make_unique<Agent>(*agent1);     // Copy weights from loaded agent
+
+        std::cout << "[+] Agent1 and its targets successfully loaded from: " << filename1 << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "[-] Error loading agent1 from file: " << e.what() << std::endl;
+    }
+
+    // Load agent2
+    try {
+        agent2 = std::make_unique<Agent>(0, 0, 0, 0); // Initialize with placeholder dimensions
+        agent2->loadFromFile(filename2);
+
+        // Create target agents for agent2
+        nextTarget2 = std::make_unique<Agent>(*agent2); // Copy weights from loaded agent
+        target2 = std::make_unique<Agent>(*agent2);     // Copy weights from loaded agent
+
+        std::cout << "[+] Agent2 and its targets successfully loaded from: " << filename2 << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "[-] Error loading agent2 from file: " << e.what() << std::endl;
+    }
+}
+
+
 
 
 /// @brief Populates memory with one game of pong
@@ -98,78 +223,78 @@ void Training::set_player(bool side)
 
 void Training::train()
 {
-    // populate Memory
-    // omp_set_num_threads(4);  // Set number of threads threads
+    std::cout << "===============================================================================================\n";
+    std::cout << "                                   Starting the Training                                       \n";
+    std::cout << "===============================================================================================\n";
+    // Populate Memory
+    // omp_set_num_threads(4);  // Set number of threads
     populateMemoryRandom();
 
-    // Should maybe moved to the constructor
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Pong");
-    SetTargetFPS(50);
+    // // Should maybe be moved to the constructor
+    DEBUG(InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Pong"));
+    DEBUG(SetTargetFPS(50));
 
+    // Declare totalReward1 and totalReward2 outside the loop
     int totalReward1 = 0;
     int totalReward2 = 0;
 
-// #pragma omp parallel for 
+    EpisodeParameter ep = mem->getNext();
+    ep.gameEnd = false;
+
+    // Main training loop
     for (int episode = 0; episode < learningParams.numEpisodes; episode++)
     {
         epsilonParams.epsilon = std::max(epsilonParams.epsilonMin, epsilonParams.epsilon - epsilonParams.epsilonDel);
 
-        // get struct to populate
-        EpisodeParameter ep = mem->getNext();
-        ep.gameEnd = false;
-
-        int totalReward1 = 0;
-        int totalReward2 = 0;
-
-        bool looser; // determines which agent to train
+        bool looser; // Determines which agent to train
         int t = 1;
+
+        // Reset rewards for each episode
+        totalReward1 = 0;
+        totalReward2 = 0;
+        ep.gameEnd = false;
 
         while (!(ep.gameEnd) && t < learningParams.maxRunningTime)
         {
             // Agent 1
-            // with probability epsilon choose random action
             if (random->randomEpsilon() < epsilonParams.epsilon)
                 ep.action1 = random->randomAction();
             else
             {
                 Eigen::Matrix<float, 3, 1> out = DQN(agent1, ep.pongVariables);
-                // Find the maximum value and its index
                 Eigen::Index idx;
                 float max_value = out.maxCoeff(&idx);
                 ep.action1 = static_cast<Action>(idx);
             }
+
             // Agent 2
-            // with probability epsilon choose random action
             if (random->randomEpsilon() < epsilonParams.epsilon)
                 ep.action2 = random->randomAction();
             else
             {
                 Eigen::Matrix<float, 3, 1> out = DQN(agent2, ep.pongVariables);
-                // Find the maximum value and its index
                 Eigen::Index idx;
                 float max_value = out.maxCoeff(&idx);
                 ep.action2 = static_cast<Action>(idx);
             }
-
-            // Step game
-            ep = game->Step(deltaTime, ep.action1, ep.action2);
-
-
-            if (episode >= learningParams.numEpisodes - 100)
-            {
-                game->scoreManager->ResetScore();
-                game->Render();             
-            }
+            
+            // if (episode >= learningParams.numEpisodes - 100)
+            // {
+            DEBUG(game->scoreManager->ResetScore());
+            DEBUG(game->Render());
+            // }
 
             mem->append(ep);
-            // std::cout << "Pong Variables : " << ep.pongVariables << std::endl;
-            // if (ep.reward1 > 0 || ep.reward2 >0)
-            //     std::cout << "Pong Reward : " << ep.reward1 << " " << ep.reward2 << std::endl;
-            // Update total Reward
-            totalReward1 += ep.reward1;
-            totalReward2 += ep.reward2;
+            ep = game->Step(deltaTime, ep.action1, ep.action2);
+            
+            LOG(ep.pongVariables);
+            // Update total rewards
+            totalReward2 += ep.reward1;
+            totalReward1 += ep.reward2;
+            LOG("TotalReward 1 " << totalReward1);
+            LOG("TotalReward 2 " << totalReward2);
 
-            // The looser of this round is trained next round
+            // Determine the looser of this round
             if (ep.gameEnd)
             {
                 looser = (ep.reward1 < ep.reward2) ? true : false;
@@ -179,45 +304,43 @@ void Training::train()
             if (t == learningParams.maxRunningTime)
                 LOG("[-] Maximal runtime for game reached : " << t);
         }
-// #pragma critical
-// {
-        // Record max reward and save weights for targets update
+
+        // Record max reward and save weights for target updates
         if (totalReward1 >= rewardParams.maxReward1)
         {
-            // std::cout << "Total reward"
             rewardParams.maxReward1 = totalReward1;
-            // nextTarget1 = std::make_unique<Agent>(*agent1);
             *nextTarget1 = *agent1;
         }
 
         if (totalReward2 >= rewardParams.maxReward2)
         {
             rewardParams.maxReward2 = totalReward2;
-            // nextTarget2 = std::make_unique<Agent>(*agent2);
             *nextTarget2 = *agent2;
         }
 
-        // Update Targets
+        // Update targets periodically
         if (episode % learningParams.updateTarget == 0)
         {
-            LOG("Updating Target | number " << episode/learningParams.updateTarget);
-            LOG("Max Rewards : " << rewardParams.maxReward1 << "|" << rewardParams.maxReward2);
-            // target1 = std::make_unique<Agent>(*nextTarget1);
-            // target2 = std::make_unique<Agent>(*nextTarget2);
+            std::cout << "[+] " << std::setw(5) << episode / learningParams.updateTarget << " update of targets";
+            std::cout << " in episode " << std::setw(7) << episode;
+            std::cout << std::fixed << std::setprecision(2);
+            std::cout << " with max rewards : " << std::setw(4) << rewardParams.maxReward1 << " | " << std::setw(4) << rewardParams.maxReward2;
+            std::cout << " and epsilon " << epsilonParams.epsilon << std::endl;
+
             *target1 = *nextTarget1;
             *target2 = *nextTarget2;
         }
 
         minibatchSGD(looser);
-        // minibatchSGD(!looser); // update both
-// }
     }
-    std::cout << "========================================" << "\n";
-    std::cout << "   Training finished successfully" << "\n";
-    std::cout << "Max Reward 1 " << rewardParams.maxReward1 << "\n";
-    std::cout << "Max Reward 2 " << rewardParams.maxReward2 << "\n";
-    std::cout << "========================================" << "\n";
+
+    std::cout << "===============================================================================================\n";
+    std::cout << "[+] Training finished successfully" << "\n";
+    std::cout << "    Max Reward 1 = " << rewardParams.maxReward1 << "\n";
+    std::cout << "    Max Reward 2 = " << rewardParams.maxReward2 << "\n";
+    std::cout << "================================================================================================\n" << std::endl;
 }
+
 
 void Training::minibatchSGD(bool isAgent)
 {
@@ -341,7 +464,7 @@ void Training::playGame()
 {
     // Should maybe moved to the constructor
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Pong");
-    SetTargetFPS(40);
+    SetTargetFPS(60);
 
     Action action1 = WAIT;
     Action action2 = WAIT;
@@ -375,14 +498,14 @@ void Training::playGame()
         action2 = static_cast<Action>(idx2);
         // std::cout << "Out2 = " << out << "\n";
         // std::cout << action2 << "\n";
-        if (state.gameEnd)
-        {
-            LOG("===================================");
-            LOG("Game ended");
-            LOG("Reward 1 " << state.reward1);
-            LOG("Reward 2 " << state.reward2);
-            LOG("===================================");
-        }
+        // if (state.gameEnd)
+        // {
+        //     LOG("===================================");
+        //     LOG("Game ended");
+        //     LOG("Reward 1 " << state.reward1);
+        //     LOG("Reward 2 " << state.reward2);
+        //     LOG("===================================");
+        // }
 
 
         game->Render();

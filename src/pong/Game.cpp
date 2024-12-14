@@ -60,32 +60,43 @@ EpisodeParameter Game::Step(float deltaTime, Action action1, Action action2)
                                 Rectangle{paddle1->x, paddle1->y, paddle1->width, paddle1->height}))
     {
         ball->speed_x *= -1;
-        reward1 = 1; // increase reward
+        reward2 = 1; // increase reward
+        ball->x += PADDLE_WIDTH/2;
+        // std::cout << "+1 left" << std::endl;
+        // ball->speed_y += GetRandomValue(-4,4);
     }
     if (CheckCollisionCircleRec(Vector2{ball->x, ball->y}, ball->radius,
                                 Rectangle{paddle2->x, paddle2->y, paddle2->width, paddle2->height}))
     {
         ball->speed_x *= -1;
-        reward2 = 1; // increase reward
+        ball->x -= PADDLE_WIDTH/2;
+        reward1 = 1; // increase reward
+        // std::cout << "+1 right" << std::endl;
+        // ball->speed_y += GetRandomValue(-4,4);
     }
+    
+    Eigen::Matrix<float, 6, 1> pongVariables(ball->x, ball->y, ball->speed_x, ball->speed_y, paddle1->y, paddle2->y);
 
     // count score and reset
     if (ball->x - ball->radius <= 0)
     {
         scoreManager->RightScored();
-        reward1 = -1; // decrease reward
+        // reward1 = -1; // decrease reward
+        // std::cout << "-1 left" << std::endl;
+        // ball->speed_x *= -1;
         gameEnd = true;
         Reset();
     }
     else if (ball->x + ball->radius >= SCREEN_WIDTH)
     {
         scoreManager->LeftScored();
-        reward2 = -1; // decrease reward
+        // reward2 = -1; // decrease reward
+        // ball->speed_x *= -1;
+        // std::cout << "-1 right" << std::endl;
         gameEnd = true;
         Reset();
     }
 
-    Eigen::Matrix<float, 6, 1> pongVariables(ball->x, ball->y, ball->speed_x, ball->speed_y, paddle1->y, paddle2->y);
     return {pongVariables, action1, action2, reward1, reward2, gameEnd};
 }
 

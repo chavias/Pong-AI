@@ -8,7 +8,8 @@
 #include <omp.h>
 #include <random>
 #include <algorithm>
-#include <memory>   
+#include <memory>
+#include <iomanip>
 
 
 // Learning parameters
@@ -53,6 +54,19 @@ public:
     Training(const LearningParams &learningParams, const EpsilonParams &epsilonParams, float deltaTime);
 
     Training(const LearningParams &learningParams, const EpsilonParams &epsilonParams, float deltaTime, size_t hidden);
+
+
+    void setAgent1(const std::string& filename);
+
+    void setAgent2(const std::string& filename);
+
+    void loadAgents(const std::string& filename1, const std::string& filename2);
+
+    void saveAgent1(const std::string& filename);
+
+    void saveAgent2(const std::string& filename);
+
+    void saveAgents(const std::string& agent1Filename, const std::string& agent2Filename);
 
     // setup Memory
     std::unique_ptr<Memory> mem;

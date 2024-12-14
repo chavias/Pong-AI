@@ -17,12 +17,17 @@ void Ball::Reset() {
 
     // Generate a random angle between -75 and 75 degrees or between 105 and 255 degrees 
     // to ensure the ball does not move straight up or down.
-    float randomAngle = GetRandomValue(-65, 65) * (PI / 180.0f); // Convert to radians
+    float randomAngle;
+    do {
+        randomAngle = GetRandomValue(-65, 65) * (PI / 180.0f); // Convert to radians
+    } while (std::abs(randomAngle) < 1e-6);
+
     if (GetRandomValue(0, 1) == 0) {
         randomAngle = PI - randomAngle; // Reflect the angle to the left half of the circle
     }
 
     // Calculate speed components based on the random angle
+    int ball_speed = (int) GetRandomValue(BALL_SPEED-2,ball_speed+2);
     speed_x = BALL_SPEED * cos(randomAngle);
     speed_y = BALL_SPEED * sin(randomAngle);
 

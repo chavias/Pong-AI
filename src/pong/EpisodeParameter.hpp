@@ -32,11 +32,11 @@ struct EpisodeParameter
     //  ball_x, ball_y, ball_vx, ball_vy, paddle1, paddle2;
     
     // y coordinate of the center of the padddle
-    Action action1 = WAIT;
-    Action action2 = WAIT;
+    Action action1;
+    Action action2;
 
     // Q2 has to be added maybe 
-    int reward1 = 0;
-    int reward2 = 0;
-    bool gameEnd = false;
+    int reward1;
+    int reward2;
+    bool gameEnd;
 };

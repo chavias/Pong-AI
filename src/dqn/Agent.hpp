@@ -11,6 +11,13 @@ public:
     //Eigen::Matrix<double, 21, 7> W1;
     //Eigen::Matrix<double, 3, 21> W2;
     
+    // Save agent to a file
+    void saveToFile(const std::string& filename) const;
+
+    // Load agent from a file
+    void loadFromFile(const std::string& filename);
+
+    
     // 21, 7, 3, 21
     Agent(size_t L1, size_t numColumnsW1, size_t numRowsW2, size_t numColumnsW2);
 
