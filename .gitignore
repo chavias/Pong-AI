@@ -4,6 +4,9 @@
 # Build folder
 [Bb][Uu][Ii][Ll][Dd]/
 
+# models
+[Mm][Oo][Dd][Ee][Ll][Ss]/
+
 # Prerequisites
 *.d
 

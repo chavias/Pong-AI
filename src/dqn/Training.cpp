@@ -1,6 +1,6 @@
 #include "Training.hpp"
 
-#define DEBUG
+//#define DEBUG
 
 #ifdef DEBUG
     #define DEBUG(X) X
@@ -373,13 +373,14 @@ void Training::minibatchSGD(bool isAgent)
         // Accumulate gradients
         dW1 += dW1temp;
         LOG("dW1" << dW1);
+        // std::cout << "dW1 " << dW1 << "\n";
         dW2 += dW2temp;
         LOG("dW2" << dW2);
+        // std::cout << "dW2 " << dW2 << "\n";
     }
 
     // Update the weights of the agent
     agent->W1 = (learningParams.learningRate / learningParams.miniBatchSize) * dW1 + (1.0f - learningParams.regularization) * agent->W1;
-    LOG("agent->W1" << agent->W1);
     agent->W2 = (learningParams.learningRate / learningParams.miniBatchSize) * dW2 + (1.0f - learningParams.regularization) * agent->W2;
 }
 
@@ -394,31 +395,58 @@ Training::gradient(const EpisodeParameter &ep, bool isAgent)
 
     // ----------------- Calculate y from Bellman Equation ---------------- //
 
-    float y = reward;
-    if (!ep.gameEnd)
+    float y = 0.0f;
+    if (ep.gameEnd)
+    {
+        y = reward;
+    }
+    else
     {
         Eigen::Matrix<float, 3, 1> out = DQN(targetRef, ep.pongVariables);
         float qTarget = out.maxCoeff(); // Maximum Q-value from target agent
-        y += learningParams.discount * qTarget;
+        y = reward + learningParams.discount * qTarget;
     }
+    // LOG("--------------------------");
+    // LOG("bellman equation y = " << y);
+    // LOG("--------------------------");
 
     // ------------------- Agent's Estimate of Q ------------------------- //
 
     DQNReturn agentOut = DQN(agentRef, ep.pongVariables, true);
-
+    // LOG("--------------------------");
+    // LOG("Q agent = " << agentOut.v2);
+    // LOG("--------------------------");
+    // LOG("agentOut.v2.rows() = " << agentOut.v2.rows());
+    // LOG("Action = " << action);
     // ------------------- Backpropagation ------------------------------- //
 
     // Output layer error and delta
-    Eigen::VectorXf e2 = Eigen::VectorXf::Zero(3);
-    e2(action) = y - agentOut.v2(action); // Target - Predicted Q-value
+    Eigen::Matrix<float, 3, 1> e2 = Eigen::Vector3f::Zero();
+    e2(action) = y - agentOut.v2((int)action);
     Eigen::VectorXf delta2 = e2;
+    // LOG("--------------------------");
+    // LOG("delta2  = " << e2);
+    // LOG("--------------------------");
 
-    // Hidden layer error
+    // Hidden layer error and delta
     Eigen::VectorXf e1 = agentRef->W2.leftCols(agentRef->W2.cols() - 1).transpose() * delta2;
+    // LOG("e1.rows() = " << e1.rows());
+    // LOG("e1.cols() = " << e1.cols());
 
-    // Hidden layer activation derivative
-    Eigen::VectorXf hiddenActivation = derActivationF(agentOut.y1);
-    Eigen::VectorXf delta1 = hiddenActivation.cwiseProduct(e1);
+    // Ensure the size of the activation function input matches the hidden layer size
+    Eigen::VectorXf hiddenLayerOutput = agentOut.y1.transpose().head(agentRef->W2.cols() - 1);
+
+    // LOG("agent y1.rows() = " << agentOut.y1.rows());
+    // LOG("agent y1.cols() = " << agentOut.y1.cols());
+
+    // LOG("hiddenLayerOutput.rows() = " << hiddenLayerOutput.rows());
+    // LOG("hiddenLayerOutput.cols() = " << hiddenLayerOutput.cols());
+
+    Eigen::VectorXf hiddenActivation = derActivationF(hiddenLayerOutput);
+    // LOG("hiddenActivation.rows() = " << hiddenActivation.rows());
+    // LOG("hiddenActivation.cols() = " << hiddenActivation.rows());
+
+    Eigen::VectorXf delta1 = derActivationF(hiddenLayerOutput).cwiseProduct(e1);
 
     // ------------------- Input Normalization --------------------------- //
 
@@ -426,15 +454,17 @@ Training::gradient(const EpisodeParameter &ep, bool isAgent)
     normalization_factors << SCREEN_WIDTH, SCREEN_HEIGHT, BALL_SPEED, BALL_SPEED, SCREEN_HEIGHT, SCREEN_HEIGHT;
     Eigen::Matrix<float, 6, 1> normalizedInput = ep.pongVariables.array() / normalization_factors.array();
 
-    // Add bias to input
+    // // Add bias to input
     Eigen::VectorXf inputWithBias(normalizedInput.size() + 1);
     inputWithBias.head(normalizedInput.size()) = normalizedInput;
-    inputWithBias(normalizedInput.size()) = 1.0f;
+    inputWithBias(normalizedInput.size()) = 1.0f; // Add bias term
 
     // ------------------- Compute Gradients ----------------------------- //
 
-    Eigen::MatrixXf dW1 = delta1 * inputWithBias.transpose(); // Gradients for W1
-    Eigen::MatrixXf dW2 = delta2 * agentOut.y1.transpose();   // Gradients for W2
+    Eigen::MatrixXf dW1 = delta1 * inputWithBias.transpose();
+    Eigen::MatrixXf dW2 = delta2 * agentOut.y1.transpose();
+    LOG("delta1" << delta1);
+    LOG("delta2" << delta2);
 
     return std::make_pair(dW1, dW2);
 }
