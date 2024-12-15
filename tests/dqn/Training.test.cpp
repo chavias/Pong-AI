@@ -12,7 +12,7 @@ protected:
     std::unique_ptr<Training> training;
 
     void SetUp() override {
-        training = std::make_unique<Training>();
+        training = std::make_unique<Training>(21);
     }
 
     // void TearDown() override {
@@ -29,15 +29,15 @@ TEST_F(TrainingTest, PopulateMemoryRandomAddsEpisodes) {
     //     Act
     training->populateMemoryRandom();
     //     Assert
-    EpisodeParameter ep1 = training->mem->sample();
+    auto [ep1, state1, ended1] = training->mem->sample();
 
     // LOG(ep1.pongVariables);
 
-    EpisodeParameter ep2 = training->mem->sample();
+    auto [ep2, state2, ended2] = training->mem->sample();
 
     // LOG(ep2.pongVariables);
 
-    EpisodeParameter ep3 = training->mem->sample();
+    auto [ep3, state3, ended3] = training->mem->sample();
 
     // LOG(ep3.pongVariables);
 }
@@ -46,10 +46,10 @@ TEST_F(TrainingTest, PopulateMemoryRandomAddsEpisodes) {
 TEST_F(TrainingTest, GradientCalculatesCorrectValues) {
     // Arrange
     training->populateMemoryRandom();
-    EpisodeParameter ep = training->mem->sample();
+    auto [ep, nextState, ended] = training->mem->sample();
 
     // Act
-    auto [dW1, dW2] = training->gradient(ep, true); // Compute for agent
+    auto [dW1, dW2] = training->gradient(ep,nextState, ended, true); // Compute for agent
     LOG("========================================");
     LOG(dW1);
     LOG("========================================");
@@ -87,7 +87,7 @@ TEST_F(TrainingTest, TrainReducesEpsilon) {
     // Arrange
     double initialEpsilon = training->epsilonParams.epsilon;
     
-    omp_set_num_threads(4);  // Set to 4 threads
+    // omp_set_num_threads(4);  // Set to 4 threads
 
     // Act
     training->train();

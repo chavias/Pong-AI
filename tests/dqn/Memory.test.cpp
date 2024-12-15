@@ -24,8 +24,9 @@ protected:
     // Add mock data to memory for the tests
     void fillMemory() {
         for (size_t i = 0; i < memory_capacity; ++i) {
+            float number = i;
             EpisodeParameter ep;
-            ep.pongVariables.setZero();  // Initialize pongVariables
+            ep.pongVariables << number, number, number, number, number, number;  // Initialize pongVariables
             ep.action1 = static_cast<Action>(i % 3);  // Cycle through actions
             ep.reward1 = static_cast<int>(i);  // Use the index as reward
             ep.reward2 = static_cast<int>(i + 1);  // Use a different value for reward2
@@ -111,4 +112,16 @@ TEST_F(MemoryTest, getNextMemoryEntry) {
 
     EXPECT_EQ(memory->getCurrent().reward1, 10);
     EXPECT_EQ(memory->getCurrent().gameEnd, true);
+}
+
+
+TEST_F(MemoryTest, sampleMemoryEntry)
+{
+    fillMemory();
+    auto [ep, state, ended] = memory->sample();
+    std::cout << ep.pongVariables[0] << std::endl;
+    std::cout << state[0] << "\n";
+
+    EXPECT_EQ((int) state[0], ((int)(ep.pongVariables[0] + 1)) % ((int) memory_capacity));
+
 }

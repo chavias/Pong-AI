@@ -97,7 +97,10 @@ public:
 
     // calculates gradient
     std::pair<Eigen::MatrixXf, Eigen::MatrixXf>
-    gradient(const EpisodeParameter &ep, bool isAgent);
+    gradient(const EpisodeParameter &ep,
+                       const Eigen::Matrix<float, 6, 1>& nextState,
+                       bool ended,
+                       bool isAgent);
 
 
     // set a human player

@@ -1,6 +1,6 @@
 #include "Training.hpp"
 
-//#define DEBUG
+// #define DEBUG
 
 #ifdef DEBUG
     #define DEBUG(X) X
@@ -29,7 +29,7 @@ Training::Training()
       random(std::make_unique<Rand>()) {}
 
 Training::Training(size_t hidden)
-    : learningParams{6e-1, 1001, 5000, 64000, 0.95, 1e-5, 500, 64},
+    : learningParams{6e-1, 1001, 500, 6400, 0.95, 1e-5, 500, 32},
       epsilonParams{1, 1e-4, 0.05},
       rewardParams{0, 0},
       deltaTime(1.0f),
@@ -112,25 +112,11 @@ void Training::setAgent2(const std::string& filename) {
     }
 }    
 
-void Training::saveAgents(const std::string& agent1Filename, const std::string& agent2Filename) {
-    try {
-        if (agent1) {
-            agent1->saveToFile(agent1Filename);
-            std::cout << "[+] Agent1 successfully saved to: " << agent1Filename << std::endl;
-        } else {
-            std::cerr << "[=] Agent1 is not initialized, cannot save!" << std::endl;
-        }
-
-        if (agent2) {
-            agent2->saveToFile(agent2Filename);
-            std::cout << "[+] Agent2 successfully saved to: " << agent2Filename << std::endl;
-        } else {
-            std::cerr << "[=] Agent2 is not initialized, cannot save!" << std::endl;
-        }
-    } catch (const std::exception& e) {
-        std::cerr << "[-] Error saving agents: " << e.what() << std::endl;
-    }
+void Training::loadAgents(const std::string& filename1, const std::string& filename2) {
+    setAgent1(filename1);
+    setAgent2(filename2);
 }
+
 
 void Training::saveAgent1(const std::string& filename) {
     // Save agent1 to a file
@@ -160,37 +146,10 @@ void Training::saveAgent2(const std::string& filename) {
     }
 }
 
-void Training::loadAgents(const std::string& filename1, const std::string& filename2) {
-    // Load agent1
-    try {
-        agent1 = std::make_unique<Agent>(0, 0, 0, 0); // Initialize with placeholder dimensions
-        agent1->loadFromFile(filename1);
-
-        // Create target agents for agent1
-        nextTarget1 = std::make_unique<Agent>(*agent1); // Copy weights from loaded agent
-        target1 = std::make_unique<Agent>(*agent1);     // Copy weights from loaded agent
-
-        std::cout << "[+] Agent1 and its targets successfully loaded from: " << filename1 << std::endl;
-    } catch (const std::exception& e) {
-        std::cerr << "[-] Error loading agent1 from file: " << e.what() << std::endl;
-    }
-
-    // Load agent2
-    try {
-        agent2 = std::make_unique<Agent>(0, 0, 0, 0); // Initialize with placeholder dimensions
-        agent2->loadFromFile(filename2);
-
-        // Create target agents for agent2
-        nextTarget2 = std::make_unique<Agent>(*agent2); // Copy weights from loaded agent
-        target2 = std::make_unique<Agent>(*agent2);     // Copy weights from loaded agent
-
-        std::cout << "[+] Agent2 and its targets successfully loaded from: " << filename2 << std::endl;
-    } catch (const std::exception& e) {
-        std::cerr << "[-] Error loading agent2 from file: " << e.what() << std::endl;
-    }
+void Training::saveAgents(const std::string& agent1Filename, const std::string& agent2Filename) {
+    saveAgent1(agent1Filename);
+    saveAgent2(agent2Filename);
 }
-
-
 
 
 /// @brief Populates memory with one game of pong
@@ -202,7 +161,7 @@ void Training::populateMemoryRandom()
         int t = 1;
         EpisodeParameter ep;
         ep.gameEnd = false;
-
+        game->Reset();
         while (!ep.gameEnd && t < learningParams.maxRunningTime)
         {
             ep = game->Step(deltaTime,
@@ -213,7 +172,6 @@ void Training::populateMemoryRandom()
         }
     }
 };
-
 
 void Training::set_player(bool side)
 {
@@ -237,13 +195,25 @@ void Training::train()
     // Declare totalReward1 and totalReward2 outside the loop
     int totalReward1 = 0;
     int totalReward2 = 0;
+    float averageReward1 = 0;
+    float averageReward2 = 0;
 
-    EpisodeParameter ep = mem->getNext();
+    EpisodeParameter ep;
+    EpisodeParameter nextEp;
+    EpisodeParameter gameResult;
     ep.gameEnd = false;
 
     // Main training loop
     for (int episode = 0; episode < learningParams.numEpisodes; episode++)
     {
+        // Initialize Pong Parameters
+        ep = mem->getNext();
+        gameResult = game->Reset();
+        ep.pongVariables = gameResult.pongVariables;
+
+        
+        ep.gameEnd = false;
+
         epsilonParams.epsilon = std::max(epsilonParams.epsilonMin, epsilonParams.epsilon - epsilonParams.epsilonDel);
 
         bool looser; // Determines which agent to train
@@ -252,10 +222,10 @@ void Training::train()
         // Reset rewards for each episode
         totalReward1 = 0;
         totalReward2 = 0;
-        ep.gameEnd = false;
 
         while (!(ep.gameEnd) && t < learningParams.maxRunningTime)
         {
+            LOG("Pong Parameter [" << ep.pongVariables.transpose() << "]");
             // Agent 1
             if (random->randomEpsilon() < epsilonParams.epsilon)
                 ep.action1 = random->randomAction();
@@ -284,18 +254,26 @@ void Training::train()
             DEBUG(game->Render());
             // }
 
-            mem->append(ep);
-            ep = game->Step(deltaTime, ep.action1, ep.action2);
-            
-            LOG(ep.pongVariables);
+            // step Game
+            gameResult = game->Step(deltaTime, ep.action1, ep.action2);
+            // save reward to previous memory entry
+            ep.reward1 = gameResult.reward1;
+            ep.reward2 = gameResult.reward2;
+            // save game state to next memory entry
+            nextEp = mem->getNext();
+            nextEp.pongVariables = gameResult.pongVariables;
+            nextEp.gameEnd = gameResult.gameEnd;
+
+            LOG("Next Episode Parameter " << nextEp.pongVariables.transpose());
+
             // Update total rewards
-            totalReward2 += ep.reward2;
-            totalReward1 += ep.reward1;
+            totalReward2 += gameResult.reward2;
+            totalReward1 += gameResult.reward1;
             LOG("TotalReward 1 " << totalReward1);
             LOG("TotalReward 2 " << totalReward2);
 
             // Determine the looser of this round
-            if (ep.gameEnd)
+            if (nextEp.gameEnd)
             {
                 looser = (totalReward1 < totalReward2) ? true : false;
             }
@@ -303,8 +281,13 @@ void Training::train()
             t++;
             if (t == learningParams.maxRunningTime)
                 LOG("[-] Maximal runtime for game reached : " << t);
-        }
 
+            LOG("Before Switch Episode Parameter " << nextEp.pongVariables.transpose());
+            ep = nextEp;
+            LOG("Switched Episode Parameter " << ep.pongVariables.transpose());
+        }
+        averageReward1+=totalReward1;
+        averageReward2+=totalReward2;
         // Record max reward and save weights for target updates
         if (totalReward1 >= rewardParams.maxReward1)
         {
@@ -321,12 +304,17 @@ void Training::train()
         // Update targets periodically
         if (episode % learningParams.updateTarget == 0)
         {
-            std::cout << "[+] " << std::setw(5) << episode / learningParams.updateTarget << " update of targets";
+            float average1 = averageReward1 / learningParams.updateTarget;
+            float average2 = averageReward2 / learningParams.updateTarget;
+            
+            std::cout << "[+] " << std::setw(5) << episode / learningParams.updateTarget << " update";
             std::cout << " in episode " << std::setw(7) << episode;
             std::cout << std::fixed << std::setprecision(2);
             std::cout << " with max rewards : " << std::setw(4) << rewardParams.maxReward1 << " | " << std::setw(4) << rewardParams.maxReward2;
-            std::cout << " and epsilon " << epsilonParams.epsilon << std::endl;
-
+            std::cout << " and epsilon " << epsilonParams.epsilon <<  " avg. rewards : " << std::setw(3) << average1 << " " << average2 << std::endl;
+            averageReward1 = 0;
+            averageReward2 = 0;
+            
             *target1 = *nextTarget1;
             *target2 = *nextTarget2;
         }
@@ -356,19 +344,22 @@ void Training::minibatchSGD(bool isAgent)
     // Initialize gradients
     Eigen::MatrixXf dW1 = Eigen::MatrixXf::Zero(agent->W1.rows(), agent->W1.cols());
     Eigen::MatrixXf dW2 = Eigen::MatrixXf::Zero(agent->W2.rows(), agent->W2.cols());
-
+    LOG("Initialize dW1 : " << dW1);
+    LOG("Initialize dW2 : " << dW2);
     // Eigen::MatrixXf dW1temp = Eigen::MatrixXf::Zero(agent->W1.rows(), agent->W1.cols());
     // Eigen::MatrixXf dW2temp = Eigen::MatrixXf::Zero(agent->W2.rows(), agent->W2.cols());
 
-    EpisodeParameter randomEpisode;
+    // EpisodeParameter randomEpisode;
+    // Eigen::Matrix<float, 6, 1>  nextState;
 
     for (int i = 0; i < learningParams.miniBatchSize; ++i)
     {
         // Sample a random instance from memory
-        randomEpisode = mem->sample();
-
+        auto [randomEpisode, nextState, ended] = mem->sample();
+        LOG("current State : " << randomEpisode.pongVariables.transpose());
+        LOG("next State : " << nextState.transpose());
         // Compute gradients for the sampled instance
-        auto [dW1temp, dW2temp] = gradient(randomEpisode, isAgent);
+        auto [dW1temp, dW2temp] = gradient(randomEpisode, nextState, ended, isAgent);
 
         // Accumulate gradients
         dW1 += dW1temp;
@@ -378,14 +369,18 @@ void Training::minibatchSGD(bool isAgent)
         LOG("dW2" << dW2);
         // std::cout << "dW2 " << dW2 << "\n";
     }
-
+    LOG("Before upgrade isAgent : " << isAgent << "\n W1 " << agent->W1 << "\n W2 " << agent->W2);
     // Update the weights of the agent
     agent->W1 = (learningParams.learningRate / learningParams.miniBatchSize) * dW1 + (1.0f - learningParams.regularization) * agent->W1;
     agent->W2 = (learningParams.learningRate / learningParams.miniBatchSize) * dW2 + (1.0f - learningParams.regularization) * agent->W2;
+    LOG("After upgrade isAgent : " << isAgent << "\n W1 " << agent->W1 << "\n W2 " << agent->W2);
 }
 
 std::pair<Eigen::MatrixXf, Eigen::MatrixXf>
-Training::gradient(const EpisodeParameter &ep, bool isAgent)
+Training::gradient(const EpisodeParameter& ep,
+                   const Eigen::Matrix<float, 6, 1>& nextState,
+                   bool ended,
+                   bool isAgent)
 {
     // References to the correct agent and target
     auto &agentRef = isAgent ? agent1 : agent2;
@@ -396,42 +391,42 @@ Training::gradient(const EpisodeParameter &ep, bool isAgent)
     // ----------------- Calculate y from Bellman Equation ---------------- //
 
     float y = 0.0f;
-    if (ep.gameEnd)
+    if (ended)
     {
         y = reward;
     }
     else
     {
-        Eigen::Matrix<float, 3, 1> out = DQN(targetRef, ep.pongVariables);
+        Eigen::Matrix<float, 3, 1> out = DQN(targetRef, nextState);
         float qTarget = out.maxCoeff(); // Maximum Q-value from target agent
         y = reward + learningParams.discount * qTarget;
     }
-    // LOG("--------------------------");
-    // LOG("bellman equation y = " << y);
-    // LOG("--------------------------");
+    LOG("--------------------------");
+    LOG("bellman equation y = " << y);
+    LOG("--------------------------");
 
     // ------------------- Agent's Estimate of Q ------------------------- //
 
     DQNReturn agentOut = DQN(agentRef, ep.pongVariables, true);
-    // LOG("--------------------------");
-    // LOG("Q agent = " << agentOut.v2);
-    // LOG("--------------------------");
-    // LOG("agentOut.v2.rows() = " << agentOut.v2.rows());
-    // LOG("Action = " << action);
+    LOG("--------------------------");
+    LOG("Q agent = " << agentOut.v2);
+    LOG("--------------------------");
+    LOG("agentOut.v2.rows() = " << agentOut.v2.rows());
+    LOG("Action = " << action);
     // ------------------- Backpropagation ------------------------------- //
 
     // Output layer error and delta
     Eigen::Matrix<float, 3, 1> e2 = Eigen::Vector3f::Zero();
     e2(action) = y - agentOut.v2((int)action);
     Eigen::VectorXf delta2 = e2;
-    // LOG("--------------------------");
-    // LOG("delta2  = " << e2);
-    // LOG("--------------------------");
+    LOG("--------------------------");
+    LOG("delta2  = " << e2);
+    LOG("--------------------------");
 
     // Hidden layer error and delta
     Eigen::VectorXf e1 = agentRef->W2.leftCols(agentRef->W2.cols() - 1).transpose() * delta2;
-    // LOG("e1.rows() = " << e1.rows());
-    // LOG("e1.cols() = " << e1.cols());
+    LOG("e1.rows() = " << e1.rows());
+    LOG("e1.cols() = " << e1.cols());
 
     // Ensure the size of the activation function input matches the hidden layer size
     Eigen::VectorXf hiddenLayerOutput = agentOut.y1.transpose().head(agentRef->W2.cols() - 1);
@@ -463,8 +458,8 @@ Training::gradient(const EpisodeParameter &ep, bool isAgent)
 
     Eigen::MatrixXf dW1 = delta1 * inputWithBias.transpose();
     Eigen::MatrixXf dW2 = delta2 * agentOut.y1.transpose();
-    LOG("delta1" << delta1);
-    LOG("delta2" << delta2);
+    LOG("delta1" << delta1.transpose());
+    LOG("delta2" << delta2.transpose());
 
     return std::make_pair(dW1, dW2);
 }
@@ -473,7 +468,7 @@ void Training::playGame()
 {
     // Should maybe moved to the constructor
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Pong");
-    SetTargetFPS(60);
+    SetTargetFPS(50);
 
     Action action1 = WAIT;
     Action action2 = WAIT;
@@ -487,11 +482,16 @@ void Training::playGame()
     Eigen::Matrix<float, 3, 1> out;
     
     game->scoreManager->ResetScore();
+    game->Reset();
     
     while (!WindowShouldClose())
     {
 
         EpisodeParameter state = game->Step(deltaTime, action1, action2);
+        if (state.gameEnd)
+        {
+            game->Reset();
+        }
         // get action 1
         out = DQN(nextTarget1, state.pongVariables);
         // std::cout << "Out1 = " << out << "\n";

@@ -46,13 +46,9 @@ public:
 
     std::unique_ptr<ScoreManager> scoreManager;
     
+    EpisodeParameter Reset();
 private:
     std::unique_ptr<Ball> ball;
     std::unique_ptr<Paddle> paddle1;
     std::unique_ptr<Paddle> paddle2;
-
-private:
-
-
-    EpisodeParameter Reset();
 };

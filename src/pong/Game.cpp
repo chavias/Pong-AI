@@ -85,7 +85,7 @@ EpisodeParameter Game::Step(float deltaTime, Action action1, Action action2)
         // std::cout << "-1 left" << std::endl;
         // ball->speed_x *= -1;
         gameEnd = true;
-        Reset();
+        // Reset();
     }
     else if (ball->x + ball->radius >= SCREEN_WIDTH)
     {
@@ -94,7 +94,7 @@ EpisodeParameter Game::Step(float deltaTime, Action action1, Action action2)
         // ball->speed_x *= -1;
         // std::cout << "-1 right" << std::endl;
         gameEnd = true;
-        Reset();
+        // Reset();
     }
 
     return {pongVariables, action1, action2, reward1, reward2, gameEnd};

@@ -1,5 +1,7 @@
 #include "Memory.hpp"
 #include <iostream>
+#include <tuple>
+ 
 
 Memory::Memory()
     : highest_index(-1), gen(rd()), dis(0, 0)
@@ -7,11 +9,14 @@ Memory::Memory()
     ReplayMemory.reserve(100000);
 }
 
-
-// sample from Memory
-const EpisodeParameter& Memory::sample()
+// sample from Memory return EpisodeParameter and next state
+const std::tuple< EpisodeParameter, Eigen::Matrix<float, 6, 1>, bool> Memory::sample()
 {
-    return ReplayMemory[dis(gen)];
+    size_t index = dis(gen);
+    EpisodeParameter ep = ReplayMemory[index];
+    Eigen::Matrix<float, 6, 1> state = ReplayMemory[(index + 1) % ReplayMemory.capacity()].pongVariables;
+    bool ended = ReplayMemory[(index + 1) % ReplayMemory.capacity()].gameEnd;
+    return {ep , state, ended};
 };
 
 // void Memory::append(const EpisodeParameter& ep)
@@ -33,7 +38,7 @@ void Memory::append(const EpisodeParameter& ep)
     ReplayMemory[highest_index] = ep;
 
     // Update random distribution range
-    dis = std::uniform_int_distribution<>(0, std::min(static_cast<int>(ReplayMemory.capacity() - 1), highest_index));
+    dis = std::uniform_int_distribution<>(0, std::min(static_cast<int>(ReplayMemory.capacity() - 2), highest_index));
 }
 
 EpisodeParameter& Memory::getCurrent()

@@ -3,20 +3,20 @@
 
 void setLearningParameter(LearningParams& learning)
 {
-    learning.learningRate = 0.5e-1;
+    learning.learningRate = 1e-1;
     learning.updateTarget = 1e5;//1e5;
     learning.startLearning = 1e5;
-    learning.numEpisodes = 1e5;
+    learning.numEpisodes = 1e6;
     learning.discount = 0.99; // 95
     learning.regularization = 0e-5;
-    learning.maxRunningTime = 5e5;
-    learning.miniBatchSize = 500;
+    learning.maxRunningTime = 5e3;
+    learning.miniBatchSize = 64;
 }
 
 void setEpsilonParameter(EpsilonParams& epParameter)
 {
     epParameter.epsilon = 1;
-    epParameter.epsilonDel = 1e-6; //1e-6
+    epParameter.epsilonDel = 2e-6; //1e-6
     epParameter.epsilonMin = 0.05;
 }
 
@@ -45,7 +45,7 @@ int main()
     std::unique_ptr<Training> training = std::make_unique<Training>(learning, eps, deltaTime, number_hidden);
 
     // Load the agents before the training
-    // training->loadAgents(filenameLeft, filenameRight);
+    training->loadAgents(filenameLeft, filenameRight);
 
 
     training->train();

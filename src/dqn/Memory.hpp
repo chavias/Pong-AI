@@ -11,7 +11,7 @@ public:
     Memory();
 
     void append(const EpisodeParameter& ep);
-    const EpisodeParameter& sample();
+    const std::tuple< EpisodeParameter, Eigen::Matrix<float, 6, 1>, bool> sample();
     EpisodeParameter& getNext();
     EpisodeParameter& getCurrent();
 
