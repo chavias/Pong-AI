@@ -46,6 +46,19 @@ EpisodeParameter& Memory::getCurrent()
     return ReplayMemory[highest_index];
 };
 
+
+EpisodeParameter& operator[](size_t index)
+{
+    return ReplayMemory[index % capacity];
+}
+
+const EpisodeParameter& operator[](size_t index) const
+{
+    return ReplayMemory[index % capacity];
+}
+
+
+
 EpisodeParameter& Memory::getNext()
 {
     highest_index = (highest_index + 1) % ReplayMemory.capacity();

@@ -15,6 +15,9 @@ public:
     EpisodeParameter& getNext();
     EpisodeParameter& getCurrent();
 
+    EpisodeParameter& operator[](size_t index);
+    const EpisodeParameter& operator[](size_t index) const;
+    
     int highest_index;
 private:
     std::vector<EpisodeParameter> ReplayMemory;
