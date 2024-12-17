@@ -175,35 +175,36 @@ void Training::saveAgents(const std::string &agent1Filename, const std::string &
 /// @brief Populates memory with one game of pong
 void Training::populateMemoryRandom()
 {
-    EpisodeParameter ep;
-    EpisodeParameter nextEp;
-    EpisodeParameter gameResult;
-    // #pragma omp parallel for
-    for (int i = 0; i < learningParams.startLearning; i++)
+    size_t idx = 0;
+    Action act1;
+    Action act2;
+
+    for (int episode = 0; episode < learningParams.startLearning; episode++)
     {
-        int t = 1;
-        ep = mem->getNext();
-        gameResult = game->Reset();
-        ep.gameEnd = false;
-        ep.pongVariables = gameResult.pongVariables;
+        EpisodeParameter gameState = game->Reset();
+        (*mem)[idx].pongVariables = gameState.pongVariables;
 
-        while (!ep.gameEnd && t < learningParams.maxRunningTime)
+        size_t t = 1;
+        while (t < learningParams.maxRunningTime && !(*mem)[idx].gameEnd)
         {
+            act1 = random->randomAction();
+            act2 = random->randomAction();
 
+            (*mem)[idx].action1 = act1;
+            (*mem)[idx].action2 = act2;
 
-            // Prepare for next episode step
-            gameResult = game->Step(deltaTime,
-                            random->randomAction(),
-                            random->randomAction());
+            gameState =  game->Step(deltaTime, act1, act2);
 
-            nextEp = mem->getNext();
-            nextEp.pongVariables = gameResult.pongVariables;
-            nextEp.gameEnd = gameResult.gameEnd;
+            (*mem)[idx].reward1 = gameState.reward1;
+            (*mem)[idx].reward2 = gameState.reward2;
+            
+            (*mem)[idx + 1].pongVariables = gameState.pongVariables;
+            (*mem)[idx + 1].gameEnd = gameState.gameEnd;
 
+            idx++;
             t++;
-
-            ep = nextEp;
         }
+        idx++;
     }
 };
 
@@ -224,6 +225,8 @@ void Training::train()
     // // Should maybe be moved to the constructor
     DEBUG(InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Pong"));
     DEBUG(SetTargetFPS(50));
+
+    size_t idx = learningParams.startLearning;
 
     // Declare totalReward1 and totalReward2 outside the loop
     int totalReward1 = 0;

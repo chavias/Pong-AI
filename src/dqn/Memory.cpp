@@ -19,19 +19,6 @@ const std::tuple< EpisodeParameter, Eigen::Matrix<float, 6, 1>, bool> Memory::sa
     return {ep , state, ended};
 };
 
-// void Memory::append(const EpisodeParameter& ep)
-// {
-//     ReplayMemory.emplace_back(ep);
-// }
-
-
-// Add a new entry to the memory
-// void Memory::append(const EpisodeParameter& ep)
-// {
-//     highest_index = (highest_index + 1) % ReplayMemory.capacity(); // Wrap around
-//     ReplayMemory[highest_index] = ep;
-// };
-
 void Memory::append(const EpisodeParameter& ep)
 {
     highest_index = (highest_index + 1) % ReplayMemory.capacity(); // Wrap around
@@ -47,14 +34,14 @@ EpisodeParameter& Memory::getCurrent()
 };
 
 
-EpisodeParameter& operator[](size_t index)
+EpisodeParameter& Memory::operator[](size_t index)
 {
-    return ReplayMemory[index % capacity];
+    return ReplayMemory[index % ReplayMemory.capacity()];
 }
 
-const EpisodeParameter& operator[](size_t index) const
+const EpisodeParameter& Memory::operator[](size_t index) const
 {
-    return ReplayMemory[index % capacity];
+    return ReplayMemory[index % ReplayMemory.capacity()];
 }
 
 

@@ -12,8 +12,8 @@ void ScoreManager::RightScored() {
 }
 
 void ScoreManager::DrawScore() const {
-    DrawText(TextFormat("%i", leftScore), SCREEN_WIDTH / 4, 20, 80, Fade(WHITE, 0.5));
-    DrawText(TextFormat("%i", rightScore), 3 * SCREEN_WIDTH / 4 - 20, 20, 80, Fade(WHITE, 0.5));
+    DrawText(TextFormat("%i", leftScore), SCREEN_WIDTH / 4, 10, 40, Fade(WHITE, 0.5));
+    DrawText(TextFormat("%i", rightScore), 3 * SCREEN_WIDTH / 4 - 20, 10, 40, Fade(WHITE, 0.5));
 }
 
 int ScoreManager::GetLeftScore() const {

@@ -94,6 +94,25 @@ TEST_F(MemoryTest, AppendDataWithWraparound) {
     EXPECT_EQ(memory->highest_index, 0);  // Expect the first element after wraparound
 }
 
+TEST_F(MemoryTest, Indexing)
+{
+    fillMemory();
+    
+    EpisodeParameter& ep0 = (*memory)[0];
+    EpisodeParameter& ep1 = (*memory)[1];
+
+    std::cout << "memory[0] = " << ep0.pongVariables.transpose() << std::endl;
+    std::cout << "memory[1] = " << ep1.pongVariables.transpose() << std::endl;
+    std::cout << "memory[2] = " << (*memory)[2].pongVariables.transpose() << std::endl;
+    
+    (*memory)[2].pongVariables << 1, 2 ,3 ,4 ,5 ,6;
+    std::cout << "memory[2] = " << (*memory)[2].pongVariables.transpose() << std::endl;
+    
+}
+
+
+
+
 // Test for correct current index behavior
 TEST_F(MemoryTest, getNextMemoryEntry) {
     fillMemory();
