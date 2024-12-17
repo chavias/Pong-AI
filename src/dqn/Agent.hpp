@@ -8,8 +8,6 @@ class Agent
 public:
     Eigen::MatrixXf W1;
     Eigen::MatrixXf W2;
-    //Eigen::Matrix<double, 21, 7> W1;
-    //Eigen::Matrix<double, 3, 21> W2;
     
     // Save agent to a file
     void saveToFile(const std::string& filename) const;
@@ -29,8 +27,11 @@ public:
     // Overload to copy from an Agent passed as unique_ptr
     Agent& operator=(const std::unique_ptr<Agent>& agent);
 
-    //private:
+    // private:
     Eigen::MatrixXf generateRandomMatrix(size_t rows, size_t cols, float minVal, float maxVal);
+
+
+    void softUpdate(std::unique_ptr<Agent>& currentAgent, float tau);
 };
 
 struct Target 

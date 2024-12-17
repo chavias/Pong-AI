@@ -39,10 +39,15 @@ public:
 
 class AIPaddle : public Paddle
 {
-// public:
-//     Action action = WAIT;
-
 public:
     AIPaddle(float startX, float startY);
+    void Update(float deltaTime, float ballY, Action action) override;
+};
+
+
+class WallPaddle : public Paddle
+{
+public:
+    WallPaddle(float startX, float startY);
     void Update(float deltaTime, float ballY, Action action) override;
 };

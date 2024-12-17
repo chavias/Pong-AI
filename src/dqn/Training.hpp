@@ -22,6 +22,7 @@ struct LearningParams {
     double regularization;
     int maxRunningTime;
     int miniBatchSize;
+    float tau; // soft update
 };
 
   // Epsilon-greedy parameters

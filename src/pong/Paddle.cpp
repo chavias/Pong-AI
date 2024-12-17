@@ -70,3 +70,28 @@ void AIPaddle::Update(float deltaTime, float ballY, Action action)
     }
     LimitMovement();
 }
+
+
+WallPaddle::WallPaddle(float startX, float startY)
+    : Paddle(startX, 0)
+{
+    y = 0;
+    // Set dimensions to cover the right side of the screen
+    height = SCREEN_HEIGHT;       // Full screen height
+    width = PADDLE_WIDTH;         // Keep the width as defined
+    x = SCREEN_WIDTH - width;     // Align paddle to the right edge
+}
+
+
+void WallPaddle::Update(float deltaTime, float ballY, Action action)
+{
+    if (y + height / 2 > ballY)
+    {
+        y -= speed * deltaTime;
+    }
+    if (y + height / 2 < ballY)
+    {
+        y += speed * deltaTime;
+    }
+    LimitMovement();
+}

@@ -60,7 +60,7 @@ EpisodeParameter Game::Step(float deltaTime, Action action1, Action action2)
                                 Rectangle{paddle1->x, paddle1->y, paddle1->width, paddle1->height}))
     {
         ball->speed_x *= -1;
-        reward2 = 1; // increase reward
+        reward1 = 1; // increase reward
         ball->x += PADDLE_WIDTH/2;
         // std::cout << "+1 left" << std::endl;
         ball->speed_y += GetRandomValue(-4,4);
@@ -70,7 +70,7 @@ EpisodeParameter Game::Step(float deltaTime, Action action1, Action action2)
     {
         ball->speed_x *= -1;
         ball->x -= PADDLE_WIDTH/2;
-        reward1 = 1; // increase reward
+        reward2 = 1; // increase reward
         // std::cout << "+1 right" << std::endl;
         ball->speed_y += GetRandomValue(-4,4);
     }

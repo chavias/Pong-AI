@@ -26,6 +26,12 @@ public:
         paddle2 = std::move(p2);
     }
 
+
+    void set_right_paddle(std::unique_ptr<Paddle>&& p2)
+    {
+        paddle2 = std::move(p2);
+    }
+
     EpisodeParameter Step(float deltaTime, Action action1, Action action2);
 
     void set_player(bool side)
@@ -47,6 +53,8 @@ public:
     std::unique_ptr<ScoreManager> scoreManager;
     
     EpisodeParameter Reset();
+
+
 private:
     std::unique_ptr<Ball> ball;
     std::unique_ptr<Paddle> paddle1;

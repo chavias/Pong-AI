@@ -279,17 +279,26 @@ void Training::train()
             ep.reward1 = gameResult.reward1;
             ep.reward2 = gameResult.reward2;
 
+            // if (ep.reward1!=0)
+            //     LOG("left scored: " << ep.reward1);
+            // if (ep.reward2!=0)
+            //     LOG("rigt scored: " << ep.reward2);
+
+            DEBUG(game->Render());
+
             totalReward1 += gameResult.reward1;
             totalReward2 += gameResult.reward2;
 
             // Prepare for next episode step
             ep = mem->getNext();
+
             ep.pongVariables = gameResult.pongVariables;
             ep.gameEnd = gameResult.gameEnd;
 
             if (ep.gameEnd)
                 looser = (totalReward1 < totalReward2);
             t++;
+
         }
 
         // Accumulate average rewards over episodes
@@ -301,12 +310,14 @@ void Training::train()
         if (totalReward1 >= rewardParams.maxReward1)
         {
             rewardParams.maxReward1 = totalReward1;
+            // target1->softUpdate(agent1, learningParams.tau*2);
             *nextTarget1 = *agent1;
         }
 
         if (totalReward2 >= rewardParams.maxReward2)
         {
             rewardParams.maxReward2 = totalReward2;
+            // target2->softUpdate(agent2, learningParams.tau*2);
             *nextTarget2 = *agent2;
         }
 
@@ -327,11 +338,18 @@ void Training::train()
             averageReward2 = 0;
             episodesSinceLastUpdate = 0;
 
+            // target1->softUpdate(agent1, learningParams.tau);
+            // target2->softUpdate(agent2, learningParams.tau);
+
             *target1 = *nextTarget1;
             *target2 = *nextTarget2;
         }
 
         minibatchSGD(looser);
+        // minibatchSGD(!looser);
+        // minibatchSGD(0);
+        // minibatchSGD(!looser); // update both
+        
     }
 
     std::cout << "===============================================================================================\n";
@@ -346,7 +364,10 @@ void Training::minibatchSGD(bool isAgent)
 {
     // References to the correct agent and target
     if (isAgent)
+    {
         LOG("Update left agent");
+        // std::cout << "Upgrede left agent" << "\n";
+    }
     else
         LOG("Update right agent");
 
