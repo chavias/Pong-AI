@@ -100,18 +100,25 @@ TEST_F(MemoryTest, Indexing)
     
     EpisodeParameter& ep0 = (*memory)[0];
     EpisodeParameter& ep1 = (*memory)[1];
+    EpisodeParameter& ep2 = (*memory)[2];
 
-    std::cout << "memory[0] = " << ep0.pongVariables.transpose() << std::endl;
-    std::cout << "memory[1] = " << ep1.pongVariables.transpose() << std::endl;
-    std::cout << "memory[2] = " << (*memory)[2].pongVariables.transpose() << std::endl;
-    
-    (*memory)[2].pongVariables << 1, 2 ,3 ,4 ,5 ,6;
-    std::cout << "memory[2] = " << (*memory)[2].pongVariables.transpose() << std::endl;
-    
+    Eigen::Matrix<float, 6, 1> result0;
+    result0 << 0, 0, 0, 0, 0, 0;
+    EXPECT_TRUE(ep0.pongVariables.isApprox(result0));
+
+    Eigen::Matrix<float, 6, 1> result1;
+    result1 << 1, 1, 1, 1, 1, 1;
+    EXPECT_TRUE(ep1.pongVariables.isApprox(result1));
+
+    Eigen::Matrix<float, 6, 1> result2;
+    result2 << 2, 2, 2, 2, 2, 2;
+    EXPECT_TRUE(ep2.pongVariables.isApprox(result2));
+
+    Eigen::Matrix<float, 6, 1> expected;
+    expected << 1, 2, 3, 4, 5, 6;
+    ep2.pongVariables << expected;
+    EXPECT_TRUE(ep2.pongVariables.isApprox(expected));
 }
-
-
-
 
 // Test for correct current index behavior
 TEST_F(MemoryTest, getNextMemoryEntry) {
