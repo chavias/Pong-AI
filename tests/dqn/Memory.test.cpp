@@ -145,9 +145,6 @@ TEST_F(MemoryTest, sampleMemoryEntry)
 {
     fillMemory();
     auto [ep, state, ended] = memory->sample();
-    std::cout << ep.pongVariables[0] << std::endl;
-    std::cout << state[0] << "\n";
-
     EXPECT_EQ((int) state[0], ((int)(ep.pongVariables[0] + 1)) % ((int) memory_capacity));
 
 }
