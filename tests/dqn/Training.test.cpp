@@ -28,18 +28,24 @@ TEST_F(TrainingTest, PopulateMemoryRandomAddsEpisodes) {
 
     //     Act
     training->populateMemoryRandom();
+
+    // for (int i = 0; i < 10; i++) {
+    //     LOG((*training->mem)[i + 1].pongVariables);
+    // }
+
+    LOG("highest index: " << training->mem->highest_index);
     //     Assert
     auto [ep1, state1, ended1] = training->mem->sample();
 
-    // LOG(ep1.pongVariables);
+    LOG(ep1.pongVariables);
 
     auto [ep2, state2, ended2] = training->mem->sample();
 
-    // LOG(ep2.pongVariables);
+    LOG(ep2.pongVariables);
 
     auto [ep3, state3, ended3] = training->mem->sample();
 
-    // LOG(ep3.pongVariables);
+    LOG(ep3.pongVariables);
 }
 
 // Test for gradient
@@ -72,6 +78,9 @@ TEST_F(TrainingTest, MinibatchSGDUpdatesAgentWeights) {
     Eigen::MatrixXf initialW1 = training->agent1->W1;
     Eigen::MatrixXf initialW2 = training->agent1->W2;
 
+    Eigen::MatrixXf Agent2_initialW1 = training->agent2->W1;
+    Eigen::MatrixXf Agent2_initialW2 = training->agent2->W2;
+
     // Act
     training->populateMemoryRandom();
     training->minibatchSGD(true); // Train agent1
@@ -79,7 +88,12 @@ TEST_F(TrainingTest, MinibatchSGDUpdatesAgentWeights) {
     // Assert
     ASSERT_NE(initialW1, training->agent1->W1);
     ASSERT_NE(initialW2, training->agent1->W2);
+
+    ASSERT_EQ(Agent2_initialW1, training->agent2->W1);
+    ASSERT_EQ(Agent2_initialW2, training->agent2->W2);
+
 }
+
 
 // Test for train
 TEST_F(TrainingTest, TrainReducesEpsilon) {

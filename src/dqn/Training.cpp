@@ -175,38 +175,43 @@ void Training::saveAgents(const std::string &agent1Filename, const std::string &
 /// @brief Populates memory with one game of pong
 void Training::populateMemoryRandom()
 {
-    size_t idx = 0;
-    Action act1;
-    Action act2;
-
     for (int episode = 0; episode < learningParams.startLearning; episode++)
     {
         EpisodeParameter gameState = game->Reset();
-        (*mem)[idx].pongVariables = gameState.pongVariables;
+        
+        // Append initial state
+        mem->append(gameState);
+        EpisodeParameter* current = &mem->getCurrent();
 
         size_t t = 1;
-        while (t < learningParams.maxRunningTime && !(*mem)[idx].gameEnd)
+        while (t < learningParams.maxRunningTime && !current->gameEnd)
         {
-            act1 = random->randomAction();
-            act2 = random->randomAction();
+            Action act1 = random->randomAction();
+            Action act2 = random->randomAction();
 
-            (*mem)[idx].action1 = act1;
-            (*mem)[idx].action2 = act2;
-
-            gameState =  game->Step(deltaTime, act1, act2);
-
-            (*mem)[idx].reward1 = gameState.reward1;
-            (*mem)[idx].reward2 = gameState.reward2;
+            // Get next memory slot and update episode
+            current->action1 = act1;
+            current->action2 = act2;
             
-            (*mem)[idx + 1].pongVariables = gameState.pongVariables;
-            (*mem)[idx + 1].gameEnd = gameState.gameEnd;
+            gameState = game->Step(deltaTime, act1, act2);
+            
+            // Store results in memory
+            current->reward1 = gameState.reward1;
+            current->reward2 = gameState.reward2;
+            
+            current = &mem->getNext();
 
-            idx++;
+            current->pongVariables = gameState.pongVariables;
+            current->gameEnd = gameState.gameEnd;
+
             t++;
         }
-        idx++;
     }
-};
+}
+
+
+
+
 
 void Training::set_player(bool side)
 {
