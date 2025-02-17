@@ -351,7 +351,7 @@ void Training::train()
         minibatchSGD(loser);
         // minibatchSGD(!loser);
         // minibatchSGD(0);
-        minibatchSGD(!loser); // update both
+        // minibatchSGD(!loser); // update both
         
     }
 
@@ -411,9 +411,13 @@ void Training::minibatchSGD(bool isAgent)
     // Compute average gradients
     dW1 /= learningParams.miniBatchSize;
     dW2 /= learningParams.miniBatchSize;
+
     // Update the weights of the agent
-    agent->W1 = learningParams.learningRate * dW1 + (1.0f - learningParams.regularization) * agent->W1;
-    agent->W2 = learningParams.learningRate * dW2 + (1.0f - learningParams.regularization) * agent->W2;
+    // agent->W1 = learningParams.learningRate * dW1 + (1.0f - learningParams.regularization) * agent->W1;
+    // agent->W2 = learningParams.learningRate * dW2 + (1.0f - learningParams.regularization) * agent->W2;
+
+    agent->W1 = agent->W1 + learningParams.learningRate * dW1 - learningParams.regularization * agent->W1;
+    agent->W2 = agent->W2 + learningParams.learningRate * dW2 - learningParams.regularization * agent->W2;
 
     LOG("After upgrade isAgent : " << isAgent << "\n W1 " << agent->W1 << "\n W2 " << agent->W2);
 }
@@ -563,9 +567,6 @@ void Training::playGame()
     std::cout << "Game end" << std::endl;
     CloseWindow();
 }
-
-
-
 
 /*
     Use atomics

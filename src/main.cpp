@@ -18,9 +18,9 @@ void setLearningParameter(LearningParams& learning)
 void setScreeningParameter(LearningParams& learning)
 {
     learning.learningRate = 0.001;
-    learning.updateTarget = 5000; //2e5;//1e5;
+    learning.updateTarget = 10000; //2e5;//1e5;
     learning.startLearning = 1e4;
-    learning.numEpisodes = 2e6;
+    learning.numEpisodes = 4e6;
     learning.discount = 0.9; // 95
     learning.regularization = 0;//0e-5;
     learning.maxRunningTime = 5e3;
@@ -59,14 +59,14 @@ void Train()
     std::unique_ptr<Training> training = std::make_unique<Training>(learning, eps, deltaTime, number_hidden);
 
     // Load the agents before the training
-    // training->loadAgents(filenameLeft, filenameRight);
+    training->loadAgents(filenameLeft, filenameRight);
 
     // training->game->set_right_paddle(std::make_unique<WallPaddle>(PADDLE2_X, 0));
 
-    // training->train();
+    training->train();
     
-    // // Save the agent after training
-    // training->saveAgents(filenameLeft, filenameRight);
+    // Save the agent after training
+    training->saveAgents(filenameLeft, filenameRight);
 
     training->playGame();
 
