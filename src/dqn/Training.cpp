@@ -172,15 +172,19 @@ void Training::saveAgents(const std::string &agent1Filename, const std::string &
     saveAgent2(agent2Filename);
 }
 
+void Training::set_player(bool side)
+{
+    game->set_player(side);
+}
+
 /// @brief Populates memory with one game of pong
 void Training::populateMemoryRandom()
 {
     for (int episode = 0; episode < learningParams.startLearning; episode++)
     {
         EpisodeParameter gameState = game->Reset();
-        
-        // Append initial state
-        mem->append(gameState);
+        mem->append(gameState); // Append initial state
+
         EpisodeParameter* current = &mem->getCurrent();
 
         size_t t = 1;
@@ -209,15 +213,6 @@ void Training::populateMemoryRandom()
     }
 }
 
-
-
-
-
-void Training::set_player(bool side)
-{
-    game->set_player(side);
-}
-
 void Training::train()
 {
     std::cout << "===============================================================================================\n";
@@ -239,10 +234,8 @@ void Training::train()
     float averageReward1 = 0;
     float averageReward2 = 0;
 
-    EpisodeParameter ep;
-    EpisodeParameter nextEp;
+    EpisodeParameter* ep;
     EpisodeParameter gameResult;
-    ep.gameEnd = false;
 
     // Declare variables for tracking updates
     int episodesSinceLastUpdate = 0;
@@ -251,38 +244,43 @@ void Training::train()
     for (int episode = 0; episode < learningParams.numEpisodes; episode++)
     {
         // Initialize Pong Parameters
-        ep = mem->getNext();
         gameResult = game->Reset();
-        ep.pongVariables = gameResult.pongVariables;
+        mem->append(gameResult); // Append initial state
+        
+        // linear
+        // epsilonParams.epsilon = std::max(epsilonParams.epsilonMin, epsilonParams.epsilon - epsilonParams.epsilonDel);
+        // exponential
+        // Change from linear to exponential decay
+        epsilonParams.epsilon = std::max(epsilonParams.epsilonMin, epsilonParams.epsilon * epsilonParams.decay_rate);
 
-        ep.gameEnd = false;
-        epsilonParams.epsilon = std::max(epsilonParams.epsilonMin, epsilonParams.epsilon - epsilonParams.epsilonDel);
 
-        bool looser; // Determines which agent to train
-        int t = 1;
-
+        bool loser; // Determines which agent to train
+        int t = 1; // Runtime counter
+        
         // Reset rewards for each episode
         totalReward1 = 0;
         totalReward2 = 0;
+        
+        ep = &mem->getCurrent();
 
-        while (!(ep.gameEnd) && t < learningParams.maxRunningTime)
+        while (!(ep->gameEnd) && t < learningParams.maxRunningTime)
         {
             // Logic for agents to choose actions
             if (random->randomEpsilon() < epsilonParams.epsilon)
-                ep.action1 = random->randomAction();
+                ep->action1 = random->randomAction();
             else
-                ep.action1 = static_cast<Action>(DQN(agent1, ep.pongVariables).maxCoeff());
+                ep->action1 = static_cast<Action>(DQN(agent1, ep->pongVariables).maxCoeff());
 
             if (random->randomEpsilon() < epsilonParams.epsilon)
-                ep.action2 = random->randomAction();
+                ep->action2 = random->randomAction();
             else
-                ep.action2 = static_cast<Action>(DQN(agent2, ep.pongVariables).maxCoeff());
+                ep->action2 = static_cast<Action>(DQN(agent2, ep->pongVariables).maxCoeff());
 
             // Step game and update rewards
-            gameResult = game->Step(deltaTime, ep.action1, ep.action2);
+            gameResult = game->Step(deltaTime, ep->action1, ep->action2);
 
-            ep.reward1 = gameResult.reward1;
-            ep.reward2 = gameResult.reward2;
+            ep->reward1 = gameResult.reward1;
+            ep->reward2 = gameResult.reward2;
 
             // if (ep.reward1!=0)
             //     LOG("left scored: " << ep.reward1);
@@ -295,13 +293,13 @@ void Training::train()
             totalReward2 += gameResult.reward2;
 
             // Prepare for next episode step
-            ep = mem->getNext();
+            ep = &mem->getNext();
 
-            ep.pongVariables = gameResult.pongVariables;
-            ep.gameEnd = gameResult.gameEnd;
+            ep->pongVariables = gameResult.pongVariables;
+            ep->gameEnd = gameResult.gameEnd;
 
-            if (ep.gameEnd)
-                looser = (totalReward1 < totalReward2);
+            if (ep->gameEnd)
+                loser = (totalReward1 < totalReward2);
             t++;
 
         }
@@ -315,15 +313,15 @@ void Training::train()
         if (totalReward1 >= rewardParams.maxReward1)
         {
             rewardParams.maxReward1 = totalReward1;
-            // target1->softUpdate(agent1, learningParams.tau*2);
-            *nextTarget1 = *agent1;
+            target1->softUpdate(agent1, learningParams.tau*2);
+            // *nextTarget1 = *agent1;
         }
 
         if (totalReward2 >= rewardParams.maxReward2)
         {
             rewardParams.maxReward2 = totalReward2;
-            // target2->softUpdate(agent2, learningParams.tau*2);
-            *nextTarget2 = *agent2;
+            target2->softUpdate(agent2, learningParams.tau*2);
+            // *nextTarget2 = *agent2;
         }
 
         // Update targets periodically
@@ -343,17 +341,17 @@ void Training::train()
             averageReward2 = 0;
             episodesSinceLastUpdate = 0;
 
-            // target1->softUpdate(agent1, learningParams.tau);
-            // target2->softUpdate(agent2, learningParams.tau);
+            target1->softUpdate(agent1, learningParams.tau);
+            target2->softUpdate(agent2, learningParams.tau);
 
-            *target1 = *nextTarget1;
-            *target2 = *nextTarget2;
+            // *target1 = *nextTarget1;
+            // *target2 = *nextTarget2;
         }
 
-        minibatchSGD(looser);
-        // minibatchSGD(!looser);
+        minibatchSGD(loser);
+        // minibatchSGD(!loser);
         // minibatchSGD(0);
-        // minibatchSGD(!looser); // update both
+        minibatchSGD(!loser); // update both
         
     }
 
@@ -368,13 +366,13 @@ void Training::train()
 void Training::minibatchSGD(bool isAgent)
 {
     // References to the correct agent and target
-    if (isAgent)
-    {
-        LOG("Update left agent");
-        // std::cout << "Upgrede left agent" << "\n";
-    }
-    else
-        LOG("Update right agent");
+    // if (isAgent)
+    // {
+    //     LOG("Update left agent");
+    //     std::cout << "Upgrede left agent" << "\n";
+    // }
+    // else
+    //     LOG("Update right agent");
 
     auto &agent = isAgent ? agent1 : agent2;
     auto &target = isAgent ? target1 : target2;
@@ -402,10 +400,10 @@ void Training::minibatchSGD(bool isAgent)
         // Accumulate gradients
         dW1 += dW1temp;
         LOG("dW1" << dW1);
-        // std::cout << "dW1 " << dW1 << "\n";
+
         dW2 += dW2temp;
         LOG("dW2" << dW2);
-        // std::cout << "dW2 " << dW2 << "\n";
+
     }
 
     LOG("Before upgrade isAgent : " << isAgent << "\n W1 " << agent->W1 << "\n W2 " << agent->W2);

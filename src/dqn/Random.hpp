@@ -6,28 +6,28 @@
 struct Rand
 {
 private:
-    std::random_device rd; // Seed source
-    std::mt19937 gen; // Mersenne Twister generator
-    std::uniform_int_distribution<int> distAction{0, 2}; // For actions (0 to 2t)
-    std::uniform_real_distribution<double> distEpsilon{0.0, 1.0}; // For epsilon (0.0 to 1.0)
+    std::random_device rd;
+    std::mt19937 gen;
+    std::uniform_int_distribution<int> distAction{0, 2};
+    std::uniform_real_distribution<double> distEpsilon{0.0, 1.0};
 
 public:
-    Rand() : gen(rd()) {} // Initialize the random generator once with the seed
+    Rand() : gen(rd()) {}
 
     Action randomAction()
     {
-        return static_cast<Action>(distAction(gen)); // Generate random action as Action enum
+        return static_cast<Action>(distAction(gen));
     }
 
     float randomEpsilon()
     {
-        return distEpsilon(gen); // Return random double for epsilon
+        return distEpsilon(gen);
     }
 };
 
 
 
-// tint main()
+// int main()
 // {
 //     Random random;
 

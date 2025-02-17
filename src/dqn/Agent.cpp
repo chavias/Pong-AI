@@ -108,7 +108,7 @@ void Agent::loadFromFile(const std::string& filename) {
 
 void Agent::softUpdate(std::unique_ptr<Agent>& currentAgent, float tau)
 {
-    std::cout << "[+] performed soft update of agent" << std::endl;
+    // std::cout << "[+] performed soft update of agent" << std::endl;
 
     W1 = tau*currentAgent->W1 + (1.0 - tau) * W1;
     W2 = tau*currentAgent->W2 + (1.0 - tau) * W2;

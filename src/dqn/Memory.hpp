@@ -17,12 +17,11 @@ public:
     EpisodeParameter& operator[](size_t index);
     const EpisodeParameter& operator[](size_t index) const;
 
-    
     int highest_index;
 
 private:
     std::vector<EpisodeParameter> ReplayMemory;
     std::random_device rd;
     std::mt19937 gen;
-    std::uniform_int_distribution<> dis;
+    mutable std::uniform_int_distribution<size_t> dis;
 };

@@ -2,9 +2,9 @@
 #include "../../src/dqn/Agent.hpp"
 #include <Eigen/Dense>
 
-// Test for the generateRandomMatrix function
+
 TEST(AgentTest, GenerateRandomMatrix_Size) {
-    Agent agent(21, 7, 3, 21);  // Example Agent with specific matrix sizes
+    Agent agent(21, 7, 3, 21);
     Eigen::MatrixXf matrix = agent.generateRandomMatrix(21, 7, -1.0, 1.0);
 
     // Test the size of the generated matrix
@@ -27,18 +27,18 @@ TEST(AgentTest, GenerateRandomMatrix_ValueRange) {
 
 // Test for the Agent constructor
 TEST(AgentTest, Constructor_InitializesMatrices) {
-    // Creating an Agent with specific dimensions for W1 and W2
-    Agent agent(21, 7, 3, 21);
-    
-    // Check that the matrices are not empty
-    EXPECT_GT(agent.W1.rows(), 0);
-    EXPECT_GT(agent.W1.cols(), 0);
-    EXPECT_GT(agent.W2.rows(), 0);
-    EXPECT_GT(agent.W2.cols(), 0);
 
-    // Check the size of W1 and W2 matches the constructor parameters
-    EXPECT_EQ(agent.W1.rows(), 21);
-    EXPECT_EQ(agent.W1.cols(), 7);
-    EXPECT_EQ(agent.W2.rows(), 3);
-    EXPECT_EQ(agent.W2.cols(), 21);
+    Agent firstAgent(21, 7, 3, 21);
+
+    EXPECT_EQ(firstAgent.W1.rows(), 21);
+    EXPECT_EQ(firstAgent.W1.cols(), 7);
+    EXPECT_EQ(firstAgent.W2.rows(), 3);
+    EXPECT_EQ(firstAgent.W2.cols(), 21);
+
+    auto secondAgent = std::make_unique<Agent>(21, 7, 3, 21);
+
+    EXPECT_EQ(secondAgent->W1.rows(), 21);
+    EXPECT_EQ(secondAgent->W1.cols(), 7);
+    EXPECT_EQ(secondAgent->W2.rows(), 3);
+    EXPECT_EQ(secondAgent->W2.cols(), 21);
 }

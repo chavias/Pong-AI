@@ -15,9 +15,9 @@ protected:
         training = std::make_unique<Training>(21);
     }
 
-    // void TearDown() override {
-    //     training.reset();
-    // }
+    void TearDown() override {
+        training.reset();
+    }
 };
 
 
@@ -37,15 +37,15 @@ TEST_F(TrainingTest, PopulateMemoryRandomAddsEpisodes) {
     //     Assert
     auto [ep1, state1, ended1] = training->mem->sample();
 
-    LOG(ep1.pongVariables);
+    LOG("Pong Variables 1" << ep1.pongVariables);
 
     auto [ep2, state2, ended2] = training->mem->sample();
 
-    LOG(ep2.pongVariables);
+    LOG("Pong Variables 2" << ep2.pongVariables);
 
     auto [ep3, state3, ended3] = training->mem->sample();
 
-    LOG(ep3.pongVariables);
+    LOG("Pong Variables 3" << ep3.pongVariables);
 }
 
 // Test for gradient

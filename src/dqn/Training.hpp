@@ -30,6 +30,7 @@ struct EpsilonParams {
     double epsilon;
     double epsilonDel;
     double epsilonMin;
+    double decay_rate;
 };
 
   // Reward tracking

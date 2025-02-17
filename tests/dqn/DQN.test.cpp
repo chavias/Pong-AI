@@ -11,7 +11,7 @@ protected:
     
     void SetUp() override
     {
-        agent = std::make_unique<Agent>(21, 7, 3, 22);  // Initialize the unique_ptr
+        agent = std::make_unique<Agent>(21, 7, 3, 22);
     }
 
 };
