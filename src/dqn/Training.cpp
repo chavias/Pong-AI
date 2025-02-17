@@ -313,15 +313,15 @@ void Training::train()
         if (totalReward1 >= rewardParams.maxReward1)
         {
             rewardParams.maxReward1 = totalReward1;
-            target1->softUpdate(agent1, learningParams.tau*2);
-            // *nextTarget1 = *agent1;
+            // target1->softUpdate(agent1, learningParams.tau*2);
+            *nextTarget1 = *agent1;
         }
 
         if (totalReward2 >= rewardParams.maxReward2)
         {
             rewardParams.maxReward2 = totalReward2;
-            target2->softUpdate(agent2, learningParams.tau*2);
-            // *nextTarget2 = *agent2;
+            // target2->softUpdate(agent2, learningParams.tau*2);
+            *nextTarget2 = *agent2;
         }
 
         // Update targets periodically
@@ -341,11 +341,11 @@ void Training::train()
             averageReward2 = 0;
             episodesSinceLastUpdate = 0;
 
-            target1->softUpdate(agent1, learningParams.tau);
-            target2->softUpdate(agent2, learningParams.tau);
+            // target1->softUpdate(agent1, learningParams.tau);
+            // target2->softUpdate(agent2, learningParams.tau);
 
-            // *target1 = *nextTarget1;
-            // *target2 = *nextTarget2;
+            *target1 = *nextTarget1;
+            *target2 = *nextTarget2;
         }
 
         minibatchSGD(loser);
@@ -563,6 +563,9 @@ void Training::playGame()
     std::cout << "Game end" << std::endl;
     CloseWindow();
 }
+
+
+
 
 /*
     Use atomics

@@ -27,7 +27,7 @@ void Ball::Reset() {
     }
 
     // Calculate speed components based on the random angle
-    int ball_speed = (int) GetRandomValue(BALL_SPEED-2,ball_speed+2);
+    int ball_speed = (int) GetRandomValue(BALL_SPEED-1,ball_speed+1);
     speed_x = BALL_SPEED * cos(randomAngle);
     speed_y = BALL_SPEED * sin(randomAngle);
 

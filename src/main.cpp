@@ -20,7 +20,7 @@ void setScreeningParameter(LearningParams& learning)
     learning.learningRate = 0.001;
     learning.updateTarget = 5000; //2e5;//1e5;
     learning.startLearning = 1e4;
-    learning.numEpisodes = 1e6;
+    learning.numEpisodes = 2e6;
     learning.discount = 0.9; // 95
     learning.regularization = 0;//0e-5;
     learning.maxRunningTime = 5e3;
@@ -52,8 +52,8 @@ void Train()
     int number_hidden = 21;
 
     // Load the agent later
-    std::string filenameLeft = "/home/mach/Projects/Pong_AI/models/agent_left_reward.dat";
-    std::string filenameRight = "/home/mach/Projects/Pong_AI/models/agent_right_wall_reward.dat";
+    std::string filenameLeft = "/home/mach/Projects/Pong_AI/models/agent_mini_left.dat";
+    std::string filenameRight = "/home/mach/Projects/Pong_AI/models/agent_mini_right.dat";
 
 
     std::unique_ptr<Training> training = std::make_unique<Training>(learning, eps, deltaTime, number_hidden);
@@ -63,7 +63,7 @@ void Train()
 
     // training->game->set_right_paddle(std::make_unique<WallPaddle>(PADDLE2_X, 0));
 
-    training->train();
+    // training->train();
     
     // // Save the agent after training
     // training->saveAgents(filenameLeft, filenameRight);
