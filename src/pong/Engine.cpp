@@ -8,8 +8,6 @@ namespace pong
 void Engine::StepGame(int action1, int action2)
 {
     updateBall();
-
-
 }
 
 void Engine::updateBall()

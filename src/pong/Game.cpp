@@ -63,7 +63,7 @@ EpisodeParameter Game::Step(float deltaTime, Action action1, Action action2)
         reward1 = 1; // increase reward
         ball->x += PADDLE_WIDTH/2;
         // std::cout << "+1 left" << std::endl;
-        ball->speed_y += GetRandomValue(-0.5,0.5);
+        ball->speed_y += GetRandomValue(-1,1);
     }
     if (CheckCollisionCircleRec(Vector2{ball->x, ball->y}, ball->radius,
                                 Rectangle{paddle2->x, paddle2->y, paddle2->width, paddle2->height}))
@@ -72,7 +72,7 @@ EpisodeParameter Game::Step(float deltaTime, Action action1, Action action2)
         ball->x -= PADDLE_WIDTH/2;
         reward2 = 1; // increase reward
         // std::cout << "+1 right" << std::endl;
-        ball->speed_y += GetRandomValue(-0.5,0.5);
+        ball->speed_y += GetRandomValue(-1,1);
     }
     
     Eigen::Matrix<float, 6, 1> pongVariables(ball->x, ball->y, ball->speed_x, ball->speed_y, paddle1->y, paddle2->y);

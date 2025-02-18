@@ -17,10 +17,10 @@ void setLearningParameter(LearningParams& learning)
 
 void setScreeningParameter(LearningParams& learning)
 {
-    learning.learningRate = 0.001;
-    learning.updateTarget = 10000; //2e5;//1e5;
+    learning.learningRate = 0.01;
+    learning.updateTarget = 50000; //2e5;//1e5;
     learning.startLearning = 1e4;
-    learning.numEpisodes = 4e6;
+    learning.numEpisodes = 5e6;
     learning.discount = 0.9; // 95
     learning.regularization = 0;//0e-5;
     learning.maxRunningTime = 5e3;
@@ -32,7 +32,7 @@ void setScreeningParameter(LearningParams& learning)
 
 void setEpsilonParameter(EpsilonParams& epParameter)
 {
-    epParameter.decay_rate = 1-1e-6;
+    epParameter.decay_rate = 1-0.5e-6;//0.5*1e7;//1-0.5e-6;
     epParameter.epsilon = 1;
     epParameter.epsilonDel = 1e-6;//1e-7; //1e-6
     epParameter.epsilonMin = 0.05;//0.05;
@@ -52,21 +52,21 @@ void Train()
     int number_hidden = 21;
 
     // Load the agent later
-    std::string filenameLeft = "/home/mach/Projects/Pong_AI/models/agent_mini_left.dat";
-    std::string filenameRight = "/home/mach/Projects/Pong_AI/models/agent_mini_right.dat";
+    // std::string filenameLeft = "/home/mach/Projects/Pong_AI/models/agent_mini_left.dat";
+    // std::string filenameRight = "/home/mach/Projects/Pong_AI/models/agent_mini_right.dat";
 
 
     std::unique_ptr<Training> training = std::make_unique<Training>(learning, eps, deltaTime, number_hidden);
 
     // Load the agents before the training
-    training->loadAgents(filenameLeft, filenameRight);
+    // training->loadAgents(filenameLeft, filenameRight);
 
     // training->game->set_right_paddle(std::make_unique<WallPaddle>(PADDLE2_X, 0));
 
     training->train();
     
     // Save the agent after training
-    training->saveAgents(filenameLeft, filenameRight);
+    // training->saveAgents(filenameLeft, filenameRight);
 
     training->playGame();
 
