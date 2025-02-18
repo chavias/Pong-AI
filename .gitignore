@@ -1,5 +1,6 @@
 # Perf files
 **/perf*
+.cache/
 
 # Build folder
 [Bb][Uu][Ii][Ll][Dd]/

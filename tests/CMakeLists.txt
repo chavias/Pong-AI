@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 
 find_package(GTest REQUIRED)
 
-# Create test main library
+
 add_library(test_main STATIC test_main.cpp)
 target_link_libraries(test_main PUBLIC GTest::GTest)
 

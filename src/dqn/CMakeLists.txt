@@ -16,7 +16,6 @@ target_link_libraries(dqn_lib
     PUBLIC OpenMP::OpenMP_CXX
 )
 
-# Add compile options
 if(MSVC)
     target_compile_options(dqn_lib PRIVATE /W4)
 else()

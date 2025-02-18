@@ -26,7 +26,7 @@ TEST_F(GameTest, StepUpdatesCorrectly) {
 
     // for (size_t i = 0; i < 100; i++)
     // {
-        EpisodeParameter result = game->Step(deltaTime, action1, action2);
+    EpisodeParameter result = game->Step(deltaTime, action1, action2);
         // LOG(result.pongVariables);
         // LOG("-------------------------");
     // }
@@ -34,14 +34,10 @@ TEST_F(GameTest, StepUpdatesCorrectly) {
     ASSERT_EQ(result.reward1, 0);
     ASSERT_EQ(result.reward2, 0);
     ASSERT_FALSE(result.gameEnd);
-
-
-
 }
 
 
-
-// // Test for collision and rewards when ball hits the paddle
+// Test for collision and rewards when ball hits the paddle
 // TEST_F(GameTest, StepCollisionAndReward) {
 //     // Simulate the ball hitting paddle1
 //     EXPECT_CALL(*paddle1, Update(testing::_, testing::_, testing::_)).Times(1);

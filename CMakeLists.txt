@@ -6,8 +6,9 @@ project(pong_dqn VERSION 1.0)
 
 option(BUILD_TESTS "BUILD_TESTS" ON)
 
-find_package(OpenMP REQUIRED)
+add_executable(${PROJECT_NAME} src/main.cpp)
 
+find_package(OpenMP REQUIRED)
 
 # Download all submodules
 find_package(Git QUIET)
@@ -32,7 +33,7 @@ endif()
 # Add external libraries
 add_subdirectory(external/raylib)
 
-# Add our libraries
+# Add own libraries
 add_subdirectory(src/dqn)
 add_subdirectory(src/pong)
 
@@ -40,8 +41,6 @@ include_directories(${PROJECT_NAME} PUBLIC
     ${PROJECT_SOURCE_DIR}/external/raylib/src/
 )
 
-# Add the main executable
-add_executable(${PROJECT_NAME} src/main.cpp)
 target_link_libraries(${PROJECT_NAME}
     PRIVATE dqn_lib
     PRIVATE pong_lib
@@ -54,7 +53,6 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 if (BUILD_TESTS)
-    # Enable testing
     include(CTest) 
     add_subdirectory(tests)
 endif()

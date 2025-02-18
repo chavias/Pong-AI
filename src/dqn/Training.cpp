@@ -514,7 +514,8 @@ Training::gradient(const EpisodeParameter &ep,
 void Training::playGame()
 {
     // Should maybe moved to the constructor
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Pong");
+    InitWindow(RENDER_WIDTH, RENDER_HEIGHT, "Pong");
+    RenderTexture2D simTexture = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
     SetTargetFPS(50);
 
     Action action1 = WAIT;
@@ -552,18 +553,24 @@ void Training::playGame()
         max_value2 = out.maxCoeff(&idx2);
         // std::cout << "idx2 = " << idx2 << "\n";
         action2 = static_cast<Action>(idx2);
-        // std::cout << "Out2 = " << out << "\n";
-        // std::cout << action2 << "\n";
-        // if (state.gameEnd)
-        // {
-        //     LOG("===================================");
-        //     LOG("Game ended");
-        //     LOG("Reward 1 " << state.reward1);
-        //     LOG("Reward 2 " << state.reward2);
-        //     LOG("===================================");
-        // }
-
-        game->Render();
+        
+            // Render the simulation scene to the low-res render texture.
+        BeginTextureMode(simTexture);
+            game->RenderSimulation();
+        EndTextureMode();
+    
+        // Now draw the simulation texture scaled up to the window size.
+        BeginDrawing();
+            ClearBackground(BLACK);
+            DrawTexturePro(simTexture.texture,
+                           // Source rectangle (flip vertically with negative height)
+                           (Rectangle){ 0, 0, (float)simTexture.texture.width, -(float)simTexture.texture.height },
+                           // Destination rectangle: scale up to fill the window
+                           (Rectangle){ 0, 0, (float)RENDER_WIDTH, (float)RENDER_HEIGHT },
+                           (Vector2){ 0, 0 },
+                           0.0f,
+                           WHITE);
+        EndDrawing();  
     }
 
     std::cout << "Game end" << std::endl;

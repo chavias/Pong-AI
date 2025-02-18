@@ -18,16 +18,15 @@ void setLearningParameter(LearningParams& learning)
 void setScreeningParameter(LearningParams& learning)
 {
     learning.learningRate = 0.01;
-    learning.updateTarget = 50000; //2e5;//1e5;
-    learning.startLearning = 1e4;
-    learning.numEpisodes = 5e6;
+    learning.updateTarget = 5000; //2e5;//1e5;
+    learning.startLearning = 5e3;
+    learning.numEpisodes = 1e6;
     learning.discount = 0.9; // 95
     learning.regularization = 0;//0e-5;
     learning.maxRunningTime = 5e3;
     learning.miniBatchSize = 64;
     learning.tau = 0.01f; // soft update
 }
-
 
 
 void setEpsilonParameter(EpsilonParams& epParameter)

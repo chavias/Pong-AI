@@ -50,6 +50,8 @@ public:
     
     void Render() const;
 
+    void RenderSimulation() const;
+
     std::unique_ptr<ScoreManager> scoreManager;
     
     EpisodeParameter Reset();

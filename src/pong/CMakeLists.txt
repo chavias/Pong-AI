@@ -17,7 +17,6 @@ target_link_libraries(pong_lib
     PUBLIC raylib
 )
 
-# Add compile options
 if(MSVC)
     target_compile_options(pong_lib PRIVATE /W4)
 else()

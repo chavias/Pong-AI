@@ -25,7 +25,7 @@ struct LearningParams {
     float tau; // soft update
 };
 
-  // Epsilon-greedy parameters
+// Epsilon-greedy parameters
 struct EpsilonParams {
     double epsilon;
     double epsilonDel;
@@ -33,7 +33,7 @@ struct EpsilonParams {
     double decay_rate;
 };
 
-  // Reward tracking
+// Reward tracking
 struct RewardParams {
     int maxReward1;
     int maxReward2;
@@ -43,7 +43,6 @@ struct RewardParams {
 class Training
 {
 public:
-
     LearningParams learningParams;
     EpsilonParams epsilonParams;
     RewardParams rewardParams;
